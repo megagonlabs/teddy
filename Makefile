@@ -32,7 +32,7 @@ ui: venv
 
 keys:
 	@read -p "Enter Google API Key:" GOOGLE_API_KEY; \
-	echo "REACT_APP_GOOGLE_API_KEY="$$GOOGLE_API_KEY > app/react-app/public/.env
+	echo "REACT_APP_GOOGLE_API_KEY="$$GOOGLE_API_KEY > app/react-app/.env
 
 gitclean:
 	#TODO

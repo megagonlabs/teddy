@@ -1,0 +1,6 @@
+{
+    "_HOW_TO_": {
+        "dataset": "the name of the folder where your data is stored. This should be under /data/"
+    },
+    "dataset": "tripadvisor_hotels"
+}

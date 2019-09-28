@@ -1,7 +1,7 @@
 # Teddy, the Review Explorer
 Teddy (Text Exploration for Diving into Data deeplY) is an interactive system that enables data scientists to quickly obtain insights from reviews and improve their extraction and modeling pipelines.
 
-![](Teddy_CHI.gif)
+![](Teddy_CHI.gif | width=800)
 
 Here is a [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuEFcvcYX-M6WJWi3so) as of the build on 8/23/2019.
 

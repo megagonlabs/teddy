@@ -1,0 +1,500 @@
+body {
+  overflow: hidden;
+}
+
+.wrap {
+  display: flex;
+  margin: 0 auto;
+  height: 100vh;
+  width: 100vw;
+}
+
+.entity-pane {
+  width: 20%;
+  height: 100%;
+  border: 1px solid #ddd;
+}
+
+.vis-pane {
+  width: 80%;
+  /* background-color: #ddd; */
+  height: 100%;
+  /* border: 1px dashed; */
+  /* border: 1px solid #ddd; */
+  display: flex;
+}
+
+.plot-col {
+  width: 35%;
+  height: 100%;
+}
+
+.vis {
+  margin: auto;
+  width: 100%;
+  height: 50%;
+  /* text-align: center; */
+  /* border-bottom: 1px dashed; */
+  border-bottom: 1px solid #ddd;
+}
+
+.details-wrap {
+  width: 65%;
+  height: 100%;
+  /* background-color: #ddd; */
+  border-left: 1px solid #ddd;
+  overflow: scroll;
+  display: flex;
+}
+
+.placeholder-p {
+  height: 5%;
+  /* text-align: center; */
+}
+
+.placeholder-p h3 {
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.pane-header {
+  height: 5%;
+  /* text-align: center; */
+  display: flex;
+}
+
+.pane-header h4 {
+  margin-top: 0;
+  margin-bottom: 0;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.entity-color-selection {
+  margin-left: 10px;
+  font-family: Menlo;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.entity-color-selection-item {
+  font-family: Menlo;
+}
+
+.review-stats {
+  width: 50%;
+}
+
+.text-col {
+  width: 50%;
+  overflow-x: hidden;
+}
+
+.review-summary {
+  /* width: 50%; */
+  height: 10%;
+  text-align: center;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+.review-summary h2 {
+  color: #bbb;
+  margin-top: 0;
+  margin-bottom: 0;
+  /* 3 lines hack on vertical-align anything */
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.review-text {
+  /* width: 50%; */
+  overflow: scroll;
+  border-right: 1px solid #ddd;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.review-items {
+  /* border-top: 1px solid #ddd; */
+}
+
+.review-item-details {
+  margin-top: 5px;
+}
+
+.review-item-details td {
+  vertical-align: middle;
+}
+
+.review-item-wrap {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.review-item-text {
+  margin-top: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-left: 3px solid #aaa;
+  /* transition: box-shadow 0.3s; */
+  transition: all 0.3s ease;
+}
+
+.review-item-text:hover {
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.review-item-text p {
+  margin-bottom: 0;
+}
+
+.review-item-tags {
+  margin-left: 0;
+}
+
+.review-tag {
+  /* background-color: #398eb2; */
+  /* margin: 2px; */
+  /* margin-left: 0; */
+  margin-right: 5px;
+  /* padding: 2px; */
+}
+
+.p-noextraction {
+
+}
+
+.p-extraction {
+  border-right: 3px solid #aaa;
+}
+
+.load-more-wrap {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.what-else-col {
+  border-left: 1px solid #ddd;
+  width: 50%;
+}
+
+.schema-col {
+  border-left: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  width: 50%;
+  overflow: scroll;
+}
+
+.reduction-method-pane {
+  text-align: center;
+}
+
+.reduction-method-pane span {
+  margin-right: 10px;
+}
+
+.svg-plot, .canvas-plot {
+  position: absolute;
+}
+
+.vis-controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.vis-controls button {
+  background-color: #e7e7e7;
+  border: none;
+  color: #000000;
+  cursor: pointer;
+  padding: 5px 10px;
+  outline: 0;
+}
+
+.vis-controls button.active {
+  background-color: #13a613;
+}
+
+.grid line {
+  stroke: #ddd;
+}
+
+.grid path {
+  stroke: #ddd;
+}
+
+.layer-nav {
+  margin-top: 5px;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.layer-nav ol {
+  margin-bottom: 0;
+}
+
+.cluster-vis {
+  width: 100%;
+  height: 45%;
+}
+
+.cluster-circle {
+  cursor: pointer;
+}
+
+.cluster-info {
+  height: 50%;
+  margin-top: 5px;
+  margin-left: 5px;
+  overflow: auto;
+}
+
+.cluster-info-table {
+  margin: 0 auto;
+  min-width: 50%;
+}
+
+.cluster-comparison-table {
+  margin-top: 10px;
+}
+
+/* .cluster-comparison-table tbody, .cluster-comparison-table thead {
+  display: block;
+} */
+
+.cluster-comparison-table tbody {
+  height: 500px;
+  overflow: auto;
+}
+
+.cluster-comparison-table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.cluster-attr {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.centroid-bar {
+  margin-top: 5px;
+  text-align: center;
+  width: 100%;
+}
+
+.centroid-bar-c1, .centroid-bar-c2 {
+  padding-right: 0 !important;
+}
+
+.review-text-transition-enter {
+  opacity: 0;
+}
+.review-text-transition-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+.review-text-transition-exit {
+  opacity: 1;
+}
+.review-text-transition-exit-active {
+  opacity: 0;
+  transition: opacity 500ms ease-in;
+}
+
+.review-item-vis {
+  margin-top: 5px;
+  transition: opacity 500ms linear;
+}
+
+.entities {
+  /* margin-left: 10px; */
+  /* display: flex; */
+  /* flex-wrap: wrap; */
+  width: 100%;
+  height: 50%;
+  overflow: scroll;
+  display: none;
+}
+
+.entity {
+  margin: 2px;
+  width: 20px;
+  height: 20px;
+  border: 1px solid;
+  text-align: center;
+  line-height: 20px;
+  font-size: 15px;
+}
+
+.entity:hover {
+  background-color: #13a613;
+}
+
+rect {
+  transition: fill .5s ease;
+}
+
+rect:hover {
+  cursor: pointer;
+}
+
+.entities-list {
+  overflow: scroll;
+  height: 50%;
+}
+
+.entity-list-item {
+  cursor: pointer;
+  transition: background-color .5s ease;
+}
+
+.hotel-card {
+  visibility: hidden;
+  position: absolute;
+  z-index: -1;
+  /* transition: opacity 1000ms ease-in-out; */
+  opacity: 0;
+  transition: left 300ms ease, top 300ms ease;
+}
+
+.hotel-card-details {
+  margin-bottom: 10px;
+}
+
+.hotel-photo {
+
+}
+
+.card-btn {
+  margin-right: 10px;
+}
+
+.hotel-map {
+  width: 100%;
+  height: 42%;
+}
+
+.vgl-vis {
+  padding-right: 0 !important;
+  /* width: 100%; */
+  text-align: center;
+}
+
+.console {
+  /* display: inline-block; */
+  position: relative;
+  /* display: block; */
+  width: 100%;
+  /* height: 10%; */
+  border-bottom: 1px solid #ddd;
+}
+
+.console::before {
+  position: absolute;
+  /* display: inline-block; */
+  content: '';
+  background-image: url(/in.svg);
+  background-size: contain;
+  /* top: 0.9rem; */
+  top: 0.5rem;
+  left: .4rem;
+  width: 15px;
+  height: 15px;
+  background-position: 50% 50%;
+  background-repeat: no-repeat;
+}
+
+.ace-cli {
+  margin-left: 1.5rem;
+  border-left: 2px solid #4c78a8;
+}
+
+.command-history {
+  border-top: 1px solid #ddd;
+  font-family: Monaco;
+}
+
+.command-code {
+  display: inline-block;
+  width: 93%;
+}
+
+.fetch-button {
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.schema-pane-wrap {
+  width: 100%;
+  height: 100%;
+}
+
+.existing-schema {
+  margin: 0 auto;
+  width: 80%;
+  height: 50%;
+  overflow: scroll;
+  text-align: center;
+  /* border-bottom: 1px solid #ddd; */
+  padding-bottom: 20px;
+}
+
+.working-schema h4 {
+  margin-top: 20px;
+}
+
+.working-schema {
+  margin: 0 auto;
+  width: 80%;
+  text-align: center;
+  border-top: 1px solid #ddd;
+}
+
+.schema-suggestion-item {
+  background-color: #eee;
+  padding: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
+  cursor: pointer;
+}
+
+.schema-suggestions {
+  display: inline-block;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.schema-suggestions span {
+  display: inline-block;
+}
+
+.remove-attr {
+  cursor: pointer;
+}
+
+.attr-input {
+  text-align: center;
+}
+
+.download-schema {
+  font-size: large;
+  cursor: pointer;
+}
+
+.grep-hl {
+  background-color: #ffbf6b;
+}

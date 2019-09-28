@@ -44,7 +44,7 @@ Important Folders
 (These will automatically run in a virtual environment called `venv`)
 
 <a name='Keys'></a><h4> API Keys (Optional) </h4> 
-Teddy requires Google API Keys in order to render the map and the hotel images. Please refer to [Google Maps Platform](https://developers.google.com/maps/documentation/embed/get-api-key) on how to get an API Key. Makefile will ask for this key during installation, however you can also configure this later on by calling `make keys`.
+Teddy requires Google API Keys in order to render the map and the hotel images. Please refer to [Google Maps Platform](https://developers.google.com/maps/documentation/embed/get-api-key) on how to get an API Key, and enable the Maps JavaScript API and the Places API. Makefile will ask for this key during installation however you can also configure this later on by calling `make keys`.
 
 <a name='Run'></a><h4> Running the Application </h4> 
 ```bash

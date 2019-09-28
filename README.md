@@ -23,7 +23,7 @@ Please watch our [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuE
 <a name='InterviewStudy'></a><h3> Motivation: a Review Analysis Interview Study </h3> 
 ---------------------------------------
 
-To better understand data science practices and challenges in review analysis and mining, we conducted an interview study with data scientists working with review text corpora. We interviewed 14 researchers (11 male and 3 female) and asked about their task goals, process, and especially their bottlenecks. Once interviews were completed, we used an iterative coding method to analyze the notes. __See the results of our iterative coding [here](https://github.com/teddyauthors/teddy/results/interview_study_iterative_coding.xlsx).__
+To better understand data science practices and challenges in review analysis and mining, we conducted an interview study with data scientists working with review text corpora. We interviewed 14 researchers (11 male and 3 female) and asked about their task goals, process, and especially their bottlenecks. Once interviews were completed, we used an iterative coding method to analyze the notes. __Download the results of our iterative coding [here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__
 
 <a name='Use'></a><h3> How to use the data and source code in this repo? </h3>
 ---------------------------------------
@@ -58,7 +58,7 @@ Then navigate to [http://localhost:3000](http://localhost:3000) in your browser.
 <a name='Dataset'></a><h3> The Dataset </h3>
 ---------------------------------------
 
-The [reviews we provide](https://github.com/teddyauthors/teddy/data/tripadvisor_hotels.zip) in order to demonstrate the application are provided by Trip Advisor under the [Creative Commons Attribution Non-Commercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/legalcode).
+The [reviews we provide](https://github.com/teddyauthors/teddy/blob/readme/data/tripadvisor_hotels.zip) in order to demonstrate the application are provided by Trip Advisor under the [Creative Commons Attribution Non-Commercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/legalcode).
 
 (Barkha Bansal. (2018). TripAdvisor Hotel Review Dataset. Zenodo. [http://doi.org/10.5281/zenodo.1219899](http://doi.org/10.5281/zenodo.1219899)). 
 

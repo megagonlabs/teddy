@@ -5,7 +5,7 @@ Teddy (Text Exploration for Diving into Data deeplY) is an interactive system th
 
 Here is a [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuEFcvcYX-M6WJWi3so) as of the build on 8/23/2019.
 
-Here is a [demo instance](http://ec2-54-67-71-12.us-west-1.compute.amazonaws.com:3000/)
+Try our [online demo!](http://ec2-54-67-71-12.us-west-1.compute.amazonaws.com:3000/)
 
 ## Installing Teddy 
 * Teddy requires Python 3.5 or above

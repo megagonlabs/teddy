@@ -27,7 +27,7 @@ To better understand data science practices and challenges in review analysis an
 
 <a name='Use'></a><h3> How to use the data and source code in this repo? </h3>
 
-SomeImportant Folders
+Important Folders
 * `app/` server and front-end code
 * `data/` subdirectories containing Trip Advisor data or your own datasets
 * `libs/` python libraries for data processing
@@ -51,7 +51,7 @@ Teddy requires Google API Keys in order to render the map and the hotel images. 
 * to start the front-end:
 `make ui`
 
-<a name='Dataset'></a>The Dataset
+<a name='Dataset'></a><h3> The Dataset </h3>
 The [default reviews provided](https://github.com/teddyauthors/teddy/data/tripadvisor_hotels.zip) in order to demonstrate the application are provided by Trip Advisor under the [Creative Commons Attribution-NonCommercial 4.0 International License](https://creativecommons.org/licenses/by-nc/4.0/legalcode) (Barkha Bansal. (2018). TripAdvisor Hotel Review Dataset. Zenodo. [http://doi.org/10.5281/zenodo.1219899](http://doi.org/10.5281/zenodo.1219899)). 
 
 A subset of the reviews for San Francisco hotels have been selected and modified by (1) computing extractions of aspect, opinion pairs and (2) clustering and computing statistics over those clusters.

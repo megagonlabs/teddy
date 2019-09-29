@@ -16,7 +16,7 @@ This page contains the source code and supplementary material for our CHI 2019 s
 
 Teddy (Text Exploration for Diving into Data deeplY) is an interactive system that enables data scientists to quickly obtain insights from reviews and improve their extraction and modeling pipelines. 
 
-__You can try our <a name='Demo'></a>[online demo here!](http://ec2-54-67-71-12.us-west-1.compute.amazonaws.com:3000/)__
+__<a name='Demo'></a>[You can try our online demo here!](http://ec2-54-67-71-12.us-west-1.compute.amazonaws.com:3000/)__
 
 <img src="results/Teddy_CHI.gif" width="900"/>
 
@@ -27,7 +27,7 @@ Above: the Teddy User Interface. From left to right we have the Entity View disp
 
 We conducted an interview study with fourteen participants to better understand the workflows and rate-limiting tasks of data scientists working on reviews, which motivated the development of features in the Teddy Review Explorer. We used an iterative coding method to aggregate the results. 
 
-__Download the results of our iterative coding [here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__
+__[Download the results of our iterative coding here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__
 
 <a name='Use'></a><h3> How to use the data and source code in this repo? </h3>
 ---------------------------------------

@@ -18,7 +18,7 @@ Teddy (Text Exploration for Diving into Data deeplY) is an interactive system th
 
 __You can try our <a name='Demo'></a>[online demo here!](http://ec2-54-67-71-12.us-west-1.compute.amazonaws.com:3000/)__
 
-<img src="https://github.com/teddyauthors/teddy/blob/results/Teddy_CHI.gif" width="900"/>
+<img src="results/Teddy_CHI.gif" width="900"/>
 
 Above: the Teddy User Interface. From left to right we have the Entity View displaying the entities mentioned in reviews, the Cluster View for exploring aggregate statistics over hierarchical clusters of reviews, the Detail View for viewing and filtering/sorting individual reviews, and the Schema Generation View for recording aspects of interest from the reviews. Please watch our [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuEFcvcYX-M6WJWi3so) for a detailed description of the features.
 

@@ -14,16 +14,20 @@ This page contains the source code and supplementary material for our CHI 2019 s
 <a name='Introduction'></a><h3> Introduction </h3> 
 ---------------------------------------
 
-Teddy (Text Exploration for Diving into Data deeplY) is an interactive system that enables data scientists to quickly obtain insights from reviews and improve their extraction and modeling pipelines. __You can try our <a name='Demo'></a>[online demo here!](http://ec2-54-67-71-12.us-west-1.compute.amazonaws.com:3000/)__
+Teddy (Text Exploration for Diving into Data deeplY) is an interactive system that enables data scientists to quickly obtain insights from reviews and improve their extraction and modeling pipelines. 
 
-Please watch our [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuEFcvcYX-M6WJWi3so) for a detailed description of the features.
+__You can try our <a name='Demo'></a>[online demo here!](http://ec2-54-67-71-12.us-west-1.compute.amazonaws.com:3000/)__
 
-<img src="results/Teddy_CHI.gif" width="900"/>
+<img src="https://github.com/teddyauthors/teddy/blob/results/Teddy_CHI.gif" width="900"/>
+
+Above: the Teddy User Interface. From left to right we have the Entity View displaying the entities mentioned in reviews, the Cluster View for exploring aggregate statistics over hierarchical clusters of reviews, the Detail View for viewing and filtering/sorting individual reviews, and the Schema Generation View for recording aspects of interest from the reviews. Please watch our [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuEFcvcYX-M6WJWi3so) for a detailed description of the features.
 
 <a name='InterviewStudy'></a><h3> Motivation: a Review Analysis Interview Study </h3> 
 ---------------------------------------
 
-To better understand data science practices and challenges in review analysis and mining, we conducted an interview study with data scientists working with review text corpora. We interviewed 14 researchers (11 male and 3 female) and asked about their task goals, process, and especially their bottlenecks. Once interviews were completed, we used an iterative coding method to analyze the notes. __Download the results of our iterative coding [here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__
+We conducted an interview study with fourteen participants to better understand the workflows and rate-limiting tasks of data scientists working on reviews, which motivated the development of features in the Teddy Review Explorer. We used an iterative coding method to aggregate the results. 
+
+__Download the results of our iterative coding [here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__
 
 <a name='Use'></a><h3> How to use the data and source code in this repo? </h3>
 ---------------------------------------
@@ -35,13 +39,15 @@ Important Folders
 * `tests/` testing code for the code in `libs/`
 
 <a name='Installation'></a><h4> Installation </h4> 
-* Teddy requires Python 3.5 or above
-* Make sure you have `venv` installed. If you don't, run: `python3 -m pip install virtualenv`
-* Install dependencies\
-`make install`
-* Build dependencies\
-`make build`\
-(These will automatically run in a virtual environment called `venv`)
+Teddy requires Python 3.5 or above.  Make sure you have `venv` installed. If you don't, run `python3 -m pip install virtualenv`
+
+```bash
+# Install dependencies
+make install
+# Build dependencies
+make build
+# These will automatically run in a virtual environment called 'venv'
+```
 
 <a name='Keys'></a><h4> API Keys (Optional) </h4> 
 Teddy requires Google API Keys in order to render the map and the hotel images. Please refer to [Google Maps Platform](https://developers.google.com/maps/documentation/embed/get-api-key) on how to get an API Key, and enable the Maps JavaScript API and the Places API. Makefile will ask for this key during installation however you can also configure this later on by calling `make keys`.

@@ -4,24 +4,6 @@ from setuptools import setup
 with open('README.md') as readme_file:
     readme = readme_file.read()
 
-# requirements = [
-#     'spacy',
-#     'Flask',
-#     'pandas',
-#     'nose',
-#     'numpy',
-#     'lexrank',
-#     'nltk',
-#     'gensim',
-#     'sklearn',
-#     'matplotlib',
-#     'seaborn',
-#     'swifter',
-#     'geopy',
-#     'tqdm',
-#     'cython'
-#     ]
-
 requirements = [
     'Cython==0.29.13',
     'Flask==1.1.1',
@@ -41,11 +23,11 @@ requirements = [
 
 
 setup(
-    author="BigGorilla",
-    author_email='thebiggorilla.team@gmail.com',
+
+    author="teddyauthors",
+    author_email='teddyauthors@gmail.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
-        'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3.6',
@@ -57,7 +39,6 @@ setup(
     include_package_data=True,
     name='Teddy',
     packages=find_packages(),
-    # package_dir={'rePOS': 'rePOS', 'cluster_testing': ' cluster_testing'},
     setup_requires=requirements,
     test_suite='tests',
     tests_require=requirements,

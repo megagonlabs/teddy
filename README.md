@@ -20,7 +20,7 @@ Please watch our [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuE
 
 <img src="results/Teddy_CHI.gif" width="900"/>
 
-<a name='InterviewStudy'></a><h3> Motivation: a Review Analysis Interview Study </h3> 
+<a name='InterviewStudy'></a><h3> Motivation: An Interview Study for Understanding Review Analysis Practices and Challenges </h3> 
 ---------------------------------------
 
 To better understand data science practices and challenges in review analysis and mining, we conducted an interview study with data scientists working with review text corpora. We interviewed 14 researchers (11 male and 3 female) and asked about their task goals, process, and especially their bottlenecks. Once interviews were completed, we used an iterative coding method to analyze the notes. __Download the results of our iterative coding [here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__

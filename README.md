@@ -5,7 +5,7 @@ This page contains the source code and supplementary material for our CHI 2020 s
 1. [Introduction](#Introduction)
    - [Demo Video of Contributions](#Contributions)
    - [Online Demo](#Demo)
-2. [Motivation: An Interview Study for Understanding Review Analysis Practices and Challenges](#InterviewStudy)
+2. [Motivation: An Interview Study into Review Analysis Practices and Challenges](#InterviewStudy)
 3. [How to use the data and source code in this repo?](#Use)
    - [Installation](#Installation)
    - [API Keys](#Keys)
@@ -23,7 +23,7 @@ __<a name='Demo'></a>[You can also try Teddy online here!](http://ec2-54-67-71-1
 
 Above: the Teddy User Interface. From left to right we have the Entity View displaying the entities mentioned in reviews, the Cluster View for exploring aggregate statistics over hierarchical clusters of reviews, the Detail View for viewing and filtering/sorting individual reviews, and the Schema Generation View for recording aspects of interest from the reviews. 
 
-<a name='InterviewStudy'></a><h3> Motivation: An Interview Study for Understanding Review Analysis Practices and Challenges </h3> 
+<a name='InterviewStudy'></a><h3> Motivation: An Interview Study into Review Analysis Practices and Challenges </h3> 
 ---------------------------------------
 
 We conducted an interview study with fourteen participants to better understand the workflows and rate-limiting tasks of data scientists working on reviews, which motivated the development of features in Teddy. We used an iterative coding method to aggregate the collected data.

@@ -1,6 +1,6 @@
 # Teddy, the Review Explorer  <img src="https://image.flaticon.com/icons/svg/194/194279.svg" width=100 align="right"/>
 
-This page contains the source code and supplementary material for our CHI 2019 submission: "Teddy: A System for Interactive Review Analysis" (Submission ID 2234).
+This page contains the source code and supplementary material for our CHI 2020 submission: "Teddy: A System for Interactive Review Analysis" (Submission ID 2234).
 
 1. [Introduction](#Introduction)
    - [Online Demo](#Demo)
@@ -22,7 +22,7 @@ __<a name='Demo'></a>[You can try our online demo here!](http://ec2-54-67-71-12.
 
 Above: the Teddy User Interface. From left to right we have the Entity View displaying the entities mentioned in reviews, the Cluster View for exploring aggregate statistics over hierarchical clusters of reviews, the Detail View for viewing and filtering/sorting individual reviews, and the Schema Generation View for recording aspects of interest from the reviews. Please watch our [demo video](https://drive.google.com/open?id=1bAu0FXF6t6I2ESuEFcvcYX-M6WJWi3so) for a detailed description of the features.
 
-<a name='InterviewStudy'></a><h3> Motivation: a Review Analysis Interview Study </h3> 
+<a name='InterviewStudy'></a><h3> Motivation: An Interview Study for Understanding Review Analysis Practices and Challenges </h3> 
 ---------------------------------------
 
 We conducted an interview study with fourteen participants to better understand the workflows and rate-limiting tasks of data scientists working on reviews, which motivated the development of features in the Teddy Review Explorer. We used an iterative coding method to aggregate the results. 

@@ -30,6 +30,8 @@ We conducted an interview study with fourteen participants to better understand 
 
 __[Download the results of our iterative coding here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__
 
+Anonymized notes from individual interviews and our interview question template are also available in the `results/` folder.
+
 <a name='Use'></a><h3> How to use the data and source code in this repo? </h3>
 ---------------------------------------
 

@@ -76,7 +76,10 @@ class ReviewItem extends Component {
 
   toggleVis() {
     // console.log(this.props.row);
-    this.setState({ showVis: !this.state.showVis });
+    var selection = window.getSelection();
+    if (!selection.toString()) {
+      this.setState({ showVis: !this.state.showVis });
+    }  
   }
 
   render() {

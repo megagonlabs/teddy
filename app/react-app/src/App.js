@@ -22,7 +22,8 @@ class App extends React.Component {
     this.onEnableBrush = this.onEnableBrush.bind(this);
     this.onResetVis = this.onResetVis.bind(this);
     this.onLoadHotelCluster = this.onLoadHotelCluster.bind(this);
-    d3.json('http://127.0.0.1:5000/data/schema.json').then(data => 
+    var schema_address = process.env.REACT_APP_SERVER_ADDRESS + 'data/schema.json';
+    d3.json(schema_address).then(data => 
     {
       this.setState({attributes: data.schema})
     });

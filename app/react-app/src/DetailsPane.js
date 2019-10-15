@@ -78,7 +78,8 @@ class DetailsPane extends Component {
 
   loadClusterReview(bizId, cid, cid2) {
     console.log(`loading reviews for ${bizId}:${cid}-${cid2}`);
-    let url = new URL('http://127.0.0.1:5000/cluster-reviews/');
+    var cluster_reviews_url = process.env.REACT_APP_SERVER_ADDRESS + 'cluster-reviews/';
+    let url = new URL(cluster_reviews_url);
     url.searchParams.append('biz_id', bizId);
     url.searchParams.append('cid', cid);
     url.searchParams.append('cid2', cid2);
@@ -92,7 +93,8 @@ class DetailsPane extends Component {
   }
 
   loadClusterSummary(cid) {
-    let url = new URL('http://127.0.0.1:5000/cluster-reviews-summary/');
+    var cluster_reviews_summary = process.env.REACT_APP_SERVER_ADDRESS + 'cluster-reviews-summary/';
+    let url = new URL(cluster_reviews_summary);
     url.searchParams.append('cid', cid);
     let _this = this;
     d3.json(url).then((res) => {
@@ -198,7 +200,8 @@ class DetailsPane extends Component {
       const func = ast.expression.callee.name;
       console.log(func, args);
       if (!(localFuncs.includes(func))) {
-        let url = new URL('http://127.0.0.1:5000/remote-run/');
+        var remote_run_url = process.env.REACT_APP_SERVER_ADDRESS + 'remote-run/';
+        let url = new URL(remote_run_url);
         const code = { func: func, args: args };
         url.searchParams.append('biz_id', this.props.bizId);
         url.searchParams.append('cid', this.props.cid);

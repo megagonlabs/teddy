@@ -39,11 +39,7 @@ class EntityPane extends Component {
     if (!existingScript) {
       const script = document.createElement('script');
       console.log(process.env)
-<<<<<<< HEAD
-      const ggApiKey = process.env.REACT_APP_API_KEY;
-=======
       const ggApiKey = process.env.REACT_APP_GOOGLE_API_KEY;
->>>>>>> b0c6fa0dce90cb5bfba12413d694f1c97e03ac4c
       if (ggApiKey === '') {
         console.error('[Teddy Bark] Google API Key is EMPTY!');
       }
@@ -172,8 +168,16 @@ class EntityPane extends Component {
   }
 
   loadEntityCard(rectPos, data) {
-    this.cardRef.style.left = rectPos.x + rectPos.width / 2 + 'px';
-    this.cardRef.style.top = rectPos.y + rectPos.height / 2 + 'px';
+   this.cardRef.style.left = rectPos.x + rectPos.width / 2 + 'px';
+    // this.cardRef.style.top = rectPos.y + rectPos.height / 2 + 'px';
+    var height = rectPos.y + rectPos.height / 2;
+    while ((height + 350) > window.innerHeight){
+      height -= 50;
+      if (height < 0) {
+        break;
+      }
+    }
+    this.cardRef.style.top = height + 'px';
     this.cardRef.style.visibility = 'visible';
     this.cardRef.style.zIndex = '10';
     this.cardRef.style.opacity = 1;

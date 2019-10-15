@@ -46,7 +46,8 @@ class ClusterView extends Component {
 
   loadLayer(bizId, nextCluster) {
     let _this = this;
-    let url = new URL('http://127.0.0.1:5000/centroids/');
+    var centroids = process.env.REACT_APP_SERVER_ADDRESS + 'centroids/'
+    let url = new URL(centroids);
     url.searchParams.append('biz_id', bizId);
     if (nextCluster) {
       const _layerClusters = [...this.state.layerClusters, nextCluster];
@@ -231,7 +232,8 @@ class ClusterView extends Component {
   }
 
   loadGlobalInfo(bizId) {
-    let url = new URL('http://127.0.0.1:5000/global-info/');
+    var global_info_url = process.env.REACT_APP_SERVER_ADDRESS + 'global-info/';
+    let url = new URL(global_info_url);
     url.searchParams.append('biz_id', bizId);
     const _this = this;
     d3.csv(url).then((res) => {
@@ -313,7 +315,8 @@ class ClusterView extends Component {
   }
 
   compareHists(cid1, cid2) {
-    let url = new URL('http://127.0.0.1:5000/histogram-comparison/');
+    var histogram_comparison_url = process.env.REACT_APP_SERVER_ADDRESS + 'histogram-comparison/';
+    let url = new URL(histogram_comparison_url);
     url.searchParams.append('biz_id', this.props.bizId);
     url.searchParams.append('cid1', cid1);
     url.searchParams.append('cid2', cid2);
@@ -324,7 +327,8 @@ class ClusterView extends Component {
   }
 
   loadTopWords(cid1, cid2 = null, ngramsize = 1, fixed = false) {
-    let url = new URL('http://127.0.0.1:5000/cluster-topngrams/');
+    var cluster_topngrams_url = process.env.REACT_APP_SERVER_ADDRESS + 'cluster-topngrams/';
+    let url = new URL(cluster_topngrams_url);
     url.searchParams.append('biz_id', this.props.bizId);
     url.searchParams.append('cid1', cid1);
     url.searchParams.append('ngramsize', ngramsize);
@@ -379,7 +383,8 @@ class ClusterView extends Component {
   }
 
   loadClusterHists(cid, col) {
-    let url = new URL('http://127.0.0.1:5000/cluster-details/');
+    var cluster_details_url = process.env.REACT_APP_SERVER_ADDRESS + 'cluster_details';
+    let url = new URL(cluster_details_url);
     url.searchParams.append('biz_id', this.props.bizId);
     url.searchParams.append('cid', cid);
     const _this = this;

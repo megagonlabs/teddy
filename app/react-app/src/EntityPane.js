@@ -62,16 +62,16 @@ class EntityPane extends Component {
     this.loadGoogleMaps();
 
     let _this = this;
-
-    // d3.json('http://127.0.0.1:5000/data/hotels-list.json').then(data => {
+    //var hotels_list_url = process.env.REACT_APP_SERVER_ADDRESS + 'hotels-list.json';
+    // d3.json(hotels_list_url).then(data => {
     //   _this.setState({ hotelsList: data });
     // });
-
-    d3.json('http://127.0.0.1:5000/data/hotel-sections.json').then(data => {
+    var hotel_sections_json = process.env.REACT_APP_SERVER_ADDRESS + 'hotel-sections.json';
+    d3.json(hotel_sections_json).then(data => {
       _this.setState({ hotelsList: data.children });
     });
 
-    d3.json('http://127.0.0.1:5000/data/hotel-sections.json').then(data => {
+    d3.json(hotel_sections_json).then(data => {
       console.log(data);
 
       data.children.forEach((d, i) => {

@@ -343,8 +343,6 @@ class EntityPane extends Component {
             <Button className="card-btn" variant="danger" onClick={this.closeCard} size="sm">Close</Button>
           </Card.Body>
         </Card>
-        <div style={{display: 'flex',  justifyContent:'center', alignItems:'center'}}>Icons made by  <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik </a>  from 
-        <a href="http://www.flaticon.com" title="Flaticon"> www.flaticon.com </a></div>
         <div className="hotel-map" ref={ e => this.mapRef = e } >
       </div>
     </div>

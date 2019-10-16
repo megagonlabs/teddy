@@ -383,7 +383,7 @@ class ClusterView extends Component {
   }
 
   loadClusterHists(cid, col) {
-    var cluster_details_url = process.env.REACT_APP_SERVER_ADDRESS + 'cluster-details';
+    var cluster_details_url = process.env.REACT_APP_SERVER_ADDRESS + 'cluster-details/';
     let url = new URL(cluster_details_url);
     url.searchParams.append('biz_id', this.props.bizId);
     url.searchParams.append('cid', cid);

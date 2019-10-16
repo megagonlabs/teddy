@@ -331,7 +331,7 @@ class EntityPane extends Component {
         <div className="entities" style={{ display: this.state.entityView == 'treemap' ? 'block' : 'none' }}></div>
         <Card className="hotel-card" style={{ width: '20rem' }} ref={ e => this.cardRef = e }>
           <AnimateOnChange animationIn="fadeIn" animationOut="fadeOut">
-            <Card.Img className="hotel-photo" variant="top" src={cardPhotoUrl} />
+            <Card.Img className="hotel-photo" variant="top" style={{width:320,height:150}} src={cardPhotoUrl} />
           </AnimateOnChange>
           <Card.Body>
             <Card.Title>{cardTitle}</Card.Title>

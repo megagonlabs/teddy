@@ -14,6 +14,7 @@ class ClusterView extends Component {
     super(props);
     // this.layerClusters = [];
     this.state = {
+      attributes: [],
       layerClusters: [],
       selectedClusterInfo: [],
       globalInfo: null,
@@ -569,6 +570,7 @@ class ClusterView extends Component {
     e.preventDefault();
     let clickedLayer = parseInt(e.target.href.substring(window.location.origin.length + 1));
     let nextCluster = this.state.layerClusters[clickedLayer];
+    // console.log("this layer: ", this.state.layerClusters[clickedLayer]);
     // console.log(this.state.layerClusters.slice(0, parseInt(clickedLayer)), nextCluster);
     this.resetCentroidBar();
     this.props.onSelectCluster(-1, -1);

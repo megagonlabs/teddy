@@ -90,6 +90,9 @@ class ClusterView extends Component {
           Object.keys(cur).forEach(function(key, index){
             // console.log(key);
             // console.log(_this.state.attributes)
+            if (_this.state.attributes.schema === undefined) {
+              return;
+            }
             if (_this.state.attributes.schema.includes(key) && Math.abs(cur[key]) >= cur_max) {
               if (cur['weighted_mean_sentiment'] >= 0 && cur[key] >= 0) {
                 valence = 1;

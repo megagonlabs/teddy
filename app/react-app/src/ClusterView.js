@@ -72,41 +72,48 @@ class ClusterView extends Component {
           // console.log("cluster: ", cluster)
           queue.push(cluster);
         }
-        var offset = 0
-        var label_list = [];
+        var label_list = Array(_this.dataSamples.length);
+        var cid_position;
         while (queue.length > 0) {
           var cur = queue.shift();
           // console.log("cur: ", cur)
           var cur_max = 0;
           var cur_label = '';
+          var index;
           Object.keys(cur).forEach(function(key, index){
             // console.log(key);
             // console.log(_this.state.attributes)
             var match;
             var greater;
-            if (_this.state.attributes.schema.includes(key) && cur[key] >= cur_max) {
+            var data_index;
+            if (_this.state.attributes.schema.includes(key) && Math.abs(cur[key]) >= cur_max) {
               match = false;
               greater = false;
               for (var i = 0; i < label_list.length; i++) {
-                if (key == label_list[i][1]) {
+                // if (label_list[i] === undefined)
+                if (label_list[i] !== undefined && key == label_list[i][1]) {
                   match = true;
-                  if (cur[key] > label_list[i][2]) {
-                    label_list.splice(i, 1);
-                    queue.push(_this.dataSamples[i+offset])
-                    offset -= 1;
+                  if (Math.abs(cur[key]) > label_list[i][2]) {
+                    data_index = Number(label_list[i][0].charAt(label_list[i][0].length-1));
+                    queue.push(_this.dataSamples[data_index])
+                    label_list[i] = [NaN, '', NaN];
                     greater = true;
                   }
                   break;
                 }
               }
               if (match == greater){
-                cur_max = cur[key];
+                cur_max = Math.abs(cur[key]);
                 cur_label = key;
               }
             };
           });
-          label_list.push([cur['cid'], cur_label, cur_max]);
+          index = Number(cur['cid'].charAt(cur['cid'].length-1));
+          label_list[index] = [cur['cid'], cur_label, cur_max];
         };
+        // console.log("take1", label_list)
+        // label_list.sort(function(a,b){return a[0] - b[0]});
+        // console.log("take2", label_list)
         // console.log("label list:", label_list)
         Object.keys(_this.dataSamples).forEach(function(key, index){
           if (Number(key) != NaN && index < label_list.length) {

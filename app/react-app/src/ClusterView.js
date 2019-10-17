@@ -13,8 +13,9 @@ class ClusterView extends Component {
   constructor(props) {
     super(props);
     // this.layerClusters = [];
+    console.log("1 cluster view attr", props.attributes )
     this.state = {
-      attributes: [],
+      attributes: props.attributes,
       layerClusters: [],
       selectedClusterInfo: [],
       globalInfo: null,
@@ -22,7 +23,7 @@ class ClusterView extends Component {
       clusterHistDistances: null,
       colHists: [ {}, {}, {} ]
     };
-
+    console.log("attr", props.attributes)
     this.selectedClusters = [];
 
     this.switchScale = this.switchScale.bind(this);
@@ -49,10 +50,13 @@ class ClusterView extends Component {
     let _this = this;
     var centroids = process.env.REACT_APP_SERVER_ADDRESS + 'centroids/';
     let url = new URL(centroids);
-    d3.json(process.env.REACT_APP_SERVER_ADDRESS + 'data/schema.json').then(data => {
-      console.log(data);
-      _this.setState({attributes: data}, () => {console.log(_this.state.attributes)});
-    });
+    const attributes = {}
+    console.log("props:", _this.state);
+    // d3.json(process.env.REACT_APP_SERVER_ADDRESS + 'data/schema.json').then(data => {
+    //   console.log(data);
+    //   attributes = data;
+    //   // _this.setState({attributes: data}, () => {console.log(_this.state.attributes)});
+    // });
     // var schema = JSON.parse(schema_url);
     url.searchParams.append('biz_id', bizId);
     if (nextCluster) {
@@ -90,10 +94,11 @@ class ClusterView extends Component {
           Object.keys(cur).forEach(function(key, index){
             // console.log(key);
             // console.log(_this.state.attributes)
-            if (_this.state.attributes.schema === undefined) {
-              return;
-            }
-            if (_this.state.attributes.schema.includes(key) && Math.abs(cur[key]) >= cur_max) {
+            // console.log(_this.state.attributes);
+            // if (_this.state.attributes.schema === undefined) {
+            //   return;
+            // }
+            if (_this.state.attributes.includes(key) && Math.abs(cur[key]) >= cur_max) {
               if (cur['weighted_mean_sentiment'] >= 0 && cur[key] >= 0) {
                 valence = 1;
               } else if (cur['weighted_mean_sentiment'] <= 0 && cur[key] <= 0) {
@@ -519,6 +524,7 @@ class ClusterView extends Component {
       //   vegaEmbed(`.attr-${i}-c${col}`, spec, vgEmbedOptions);
       // });
       let colHist = {};
+      console.log("cluster view, props.attr", this.state.attributes)
       this.props.attributes.forEach((attr, i) => {
         colHist[attr] = (<ClusterHist key={cid} attr={attr} hist={res.hists[attr]} div={res.div} width={this.visRef.clientWidth * 0.2}/>);
       });
@@ -529,7 +535,7 @@ class ClusterView extends Component {
   }
 
   renderClusterBar(centroid, col) {
-    let values = this.props.attributes.map((k) => {
+    let values = this.state.attributes.map((k) => {
       return {
         attribute: k,
         score: centroid[k],
@@ -647,7 +653,7 @@ class ClusterView extends Component {
     const nSelectedClusters = clusterInfo.length;
     const globalInfo = this.state.globalInfo;
     const clusterHistDistances = this.state.clusterHistDistances;
-    let sortedAttributes = [...this.props.attributes];
+    let sortedAttributes = [...this.state.attributes];
     if (clusterHistDistances) {
       sortedAttributes.sort((a, b) => clusterHistDistances[b] - clusterHistDistances[a]);
     }

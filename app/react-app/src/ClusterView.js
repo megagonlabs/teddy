@@ -64,38 +64,57 @@ class ClusterView extends Component {
       console.log(res);
       if (res.type == 'centroids') {
         var queue = [];
-        console.log("attr:", _this.state.attributes);
+        // console.log("attr:", _this.state.attributes);
         _this.dataSamples = d3.csvParse(res.data);
-        console.log(_this.dataSamples)
+        // console.log(_this.dataSamples)
         for (var i = 0; i < _this.dataSamples.length; i++) {
           var cluster = _this.dataSamples[i];
           // console.log("cluster: ", cluster)
           queue.push(cluster);
         }
+        var offset = 0
         var label_list = [];
         while (queue.length > 0) {
           var cur = queue.shift();
-          console.log("cur: ", cur)
+          // console.log("cur: ", cur)
           var cur_max = 0;
           var cur_label = '';
           Object.keys(cur).forEach(function(key, index){
             // console.log(key);
-            console.log(_this.state.attributes)
+            // console.log(_this.state.attributes)
+            var match;
+            var greater;
             if (_this.state.attributes.schema.includes(key) && cur[key] >= cur_max) {
-              cur_max = cur[key];
-              cur_label = key;
+              match = false;
+              greater = false;
+              for (var i = 0; i < label_list.length; i++) {
+                if (key == label_list[i][1]) {
+                  match = true;
+                  if (cur[key] > label_list[i][2]) {
+                    label_list.splice(i, 1);
+                    queue.push(_this.dataSamples[i+offset])
+                    offset -= 1;
+                    greater = true;
+                  }
+                  break;
+                }
+              }
+              if (match == greater){
+                cur_max = cur[key];
+                cur_label = key;
+              }
             };
           });
           label_list.push([cur['cid'], cur_label, cur_max]);
         };
-        console.log("label list:", label_list)
+        // console.log("label list:", label_list)
         Object.keys(_this.dataSamples).forEach(function(key, index){
           if (Number(key) != NaN && index < label_list.length) {
             // key = Number(key)
             // console.log(key)
             _this.dataSamples[key].label = label_list[index][1];
-            console.log('in data samples:', _this.dataSamples[key].label)
-            console.log(_this.dataSamples[key])
+            // console.log('in data samples:', _this.dataSamples[key].label)
+            // console.log(_this.dataSamples[key])
           }
         });
         const margin = { top: 5, right: 5, bottom: 5, left: 5 }; // [Xiong] tweak this to control the plot position
@@ -167,7 +186,7 @@ class ClusterView extends Component {
     // see https://bl.ocks.org/mbostock/1846692
     elemEnter.append('text')
       .text(function(d) {
-        console.log(d);
+        // console.log(d);
         const label = d.label;
         // console.log("d", d);
         return label;

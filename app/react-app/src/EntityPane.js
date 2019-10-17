@@ -12,7 +12,9 @@ import packageJson from '../package.json';
 class EntityPane extends Component {
   constructor(props) {
     super(props);
+    var attr = props.attributes
     this.state = {
+      attributes: attr,
       cardTitle: '',
       cardText: '',
       cardRCount: 0,
@@ -277,7 +279,8 @@ class EntityPane extends Component {
     const rcount = this.state.cardRCount;
     const cardPhotoUrl = this.state.cardPhotoUrl;
     const hotelsList = this.state.hotelsList;
-    const attributes = this.props.attributes;
+    const attributes = this.state.attributes;
+    console.log("attribute, entityPane", attributes)
 
     return (
       <div className="entity-pane">
@@ -292,7 +295,7 @@ class EntityPane extends Component {
 
               <Dropdown.Menu>
                 {
-                  attributes.map((attr, i) => (
+                  this.state.attributes.map((attr, i) => (
                     <Dropdown.Item href={`${attr}`} className="entity-color-selection-item" onClick={this.colorHotel} key={i}>{attr}</Dropdown.Item>
                   ))
                 }

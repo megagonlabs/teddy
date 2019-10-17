@@ -74,29 +74,39 @@ class ClusterView extends Component {
         }
         var label_list = Array(_this.dataSamples.length);
         var cid_position;
+        var cur_max;
+        var cur_label;
+        var cur;
         while (queue.length > 0) {
-          var cur = queue.shift();
+          cur = queue.shift();
           // console.log("cur: ", cur)
-          var cur_max = 0;
-          var cur_label = '';
+          cur_max = 0;
+          cur_label = '';
           var index;
+          var match;
+          var greater;
+          var data_index;
+          var valence;
           Object.keys(cur).forEach(function(key, index){
+            if (cur['weighted_mean_sentiment'] >= 0) {
+                valence = 1;
+              } else {
+                valence = -1;
+              };
             // console.log(key);
             // console.log(_this.state.attributes)
-            var match;
-            var greater;
-            var data_index;
             if (_this.state.attributes.schema.includes(key) && Math.abs(cur[key]) >= cur_max) {
               match = false;
               greater = false;
+              console.log("cur", cur)
               for (var i = 0; i < label_list.length; i++) {
                 // if (label_list[i] === undefined)
-                if (label_list[i] !== undefined && key == label_list[i][1]) {
+                if (label_list[i] !== undefined && key == label_list[i][1] && valence == label_list[i][3]) {
                   match = true;
                   if (Math.abs(cur[key]) > label_list[i][2]) {
                     data_index = Number(label_list[i][0].charAt(label_list[i][0].length-1));
                     queue.push(_this.dataSamples[data_index])
-                    label_list[i] = [NaN, '', NaN];
+                    label_list[i] = [NaN, '', NaN, NaN];
                     greater = true;
                   }
                   break;
@@ -109,7 +119,7 @@ class ClusterView extends Component {
             };
           });
           index = Number(cur['cid'].charAt(cur['cid'].length-1));
-          label_list[index] = [cur['cid'], cur_label, cur_max];
+          label_list[index] = [cur['cid'], cur_label, cur_max, valence];
         };
         // console.log("take1", label_list)
         // label_list.sort(function(a,b){return a[0] - b[0]});

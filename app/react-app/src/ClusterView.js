@@ -21,7 +21,12 @@ class ClusterView extends Component {
       globalInfo: null,
       barScale: 1,
       clusterHistDistances: null,
-      colHists: [ {}, {}, {} ]
+      colHists: [ {}, {}, {} ],
+      maxR: 0,
+      maxPCAX: 0,
+      maxPCAY: 0,
+      minPCAX: 300,
+      minPCAY: 300
     };
     console.log("attr", props.attributes)
     this.selectedClusters = [];
@@ -51,7 +56,6 @@ class ClusterView extends Component {
     var centroids = process.env.REACT_APP_SERVER_ADDRESS + 'centroids/';
     let url = new URL(centroids);
     const attributes = {}
-    console.log("props:", _this.state);
     // d3.json(process.env.REACT_APP_SERVER_ADDRESS + 'data/schema.json').then(data => {
     //   console.log(data);
     //   attributes = data;
@@ -81,8 +85,30 @@ class ClusterView extends Component {
         var cur_max;
         var cur_label;
         var cur;
+        var cur_r;
+        var cur_max_x;
+        var cur_max_y;
+        var cur_min_x;
+        var cur_min_y;
         while (queue.length > 0) {
           cur = queue.shift();
+          cur_r = (parseFloat(cur['_csize']) + 1) * 30;
+          if (cur_r > _this.state.maxR) {
+            _this.state.maxR = cur_r;
+          }
+          if (cur['pca_x'] > _this.state.maxPCAX) {
+            _this.state.maxPCAX = cur['pca_x']
+          }
+          if (cur['pca_y'] > _this.state.maxPCAY) {
+            _this.state.maxPCAY = cur['pca_y']
+          }
+          if (cur['pca_x'] < _this.state.minPCAX) {
+            _this.state.minPCAX = cur['pca_x']
+          }
+          if (cur['pca_y'] < _this.state.minPCAY) {
+            _this.state.minPCAY = cur['pca_y']
+          }
+
           // console.log("cur: ", cur)
           cur_max = 0;
           cur_label = 'undetermined';
@@ -108,7 +134,6 @@ class ClusterView extends Component {
               };
               match = false;
               greater = false;
-              console.log("cur", cur)
               for (var i = 0; i < label_list.length; i++) {
                 // if (label_list[i] === undefined)
                 if (label_list[i] !== undefined && key == label_list[i][1] && valence == label_list[i][3]) {
@@ -293,11 +318,19 @@ class ClusterView extends Component {
     // Init Scales
     const reduction = 'pca';
     this.sampleRange = {
-      x0: d3.min(this.dataSamples, (d) => parseFloat(d[`${reduction}_x`])) - 0.1,
-      y0: d3.min(this.dataSamples, (d) => parseFloat(d[`${reduction}_y`])) - 0.1,
-      x1: d3.max(this.dataSamples, (d) => parseFloat(d[`${reduction}_x`])) + 0.1,
-      y1: d3.max(this.dataSamples, (d) => parseFloat(d[`${reduction}_y`])) + 0.1
+      x0: d3.min(this.dataSamples, (d) => parseFloat(d[`${reduction}_x`])) - 0.3,
+      y0: d3.min(this.dataSamples, (d) => parseFloat(d[`${reduction}_y`])) - 0.3,
+      x1: d3.max(this.dataSamples, (d) => parseFloat(d[`${reduction}_x`])) + 0.3,
+      y1: d3.max(this.dataSamples, (d) => parseFloat(d[`${reduction}_y`])) + 0.3
     };
+    console.log("x0", this.sampleRange.x0, "y0", this.sampleRange.y0)
+    console.log("x1", this.sampleRange.x1, "y1", this.sampleRange.y1)
+    console.log('width', this.width, 'height', this.height)
+    console.log("maxR", this.state.maxR)
+    console.log("maxPCAX", this.state.maxPCAX, "minPCAX", this.state.minPCAX)
+    console.log("maxPCAY", this.state.maxPCAY, "minPCAY", this.state.minPCAY)
+
+    // this.width = 100;
     this.x = d3.scaleLinear().domain([this.sampleRange.x0, this.sampleRange.x1]).range([0, this.width]).nice();
     this.y = d3.scaleLinear().domain([this.sampleRange.y0, this.sampleRange.y1]).range([this.height, 0]).nice();
 
@@ -524,7 +557,6 @@ class ClusterView extends Component {
       //   vegaEmbed(`.attr-${i}-c${col}`, spec, vgEmbedOptions);
       // });
       let colHist = {};
-      console.log("cluster view, props.attr", this.state.attributes)
       this.props.attributes.forEach((attr, i) => {
         colHist[attr] = (<ClusterHist key={cid} attr={attr} hist={res.hists[attr]} div={res.div} width={this.visRef.clientWidth * 0.2}/>);
       });

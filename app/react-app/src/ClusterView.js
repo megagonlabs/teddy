@@ -203,12 +203,23 @@ class ClusterView extends Component {
         // Initial draw made with no zoom
         _this.draw();
       } else {
+        _this.drawBlank();
         // maybe draw points in the plot
         // console.log(d3.csvParse(res.data));
       }
     });
   }
-
+  drawBlank() {
+    let elemEnter = this.svgChart;
+    elemEnter.append('text')
+      .text("No subclusters to display")
+      .style('font-size', "30px")
+      .attr('dx', 30)
+      .attr('dy', d => {
+        return this.height / 2 - 15;
+      })
+      .style('fill', '#153d52');
+  };
   draw() {
     // this.dataSamples.forEach((point, i) => {
     //   this.drawPoint(this.x, this.y, point, 1, 1);

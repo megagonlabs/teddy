@@ -46,8 +46,13 @@ class ClusterView extends Component {
 
   loadLayer(bizId, nextCluster) {
     let _this = this;
-    var centroids = process.env.REACT_APP_SERVER_ADDRESS + 'centroids/'
+    var centroids = process.env.REACT_APP_SERVER_ADDRESS + 'centroids/';
     let url = new URL(centroids);
+    d3.json(process.env.REACT_APP_SERVER_ADDRESS + 'data/schema.json').then(data => {
+      console.log(data);
+      _this.setState({attributes: data}, () => {console.log(_this.state.attributes)});
+    });
+    // var schema = JSON.parse(schema_url);
     url.searchParams.append('biz_id', bizId);
     if (nextCluster) {
       const _layerClusters = [...this.state.layerClusters, nextCluster];
@@ -55,9 +60,43 @@ class ClusterView extends Component {
       this.setState({ layerClusters: _layerClusters });
     }
     d3.json(url).then(res => {
-      // console.log(res);
+      console.log(res);
       if (res.type == 'centroids') {
+        var queue = [];
+        console.log("attr:", _this.state.attributes);
         _this.dataSamples = d3.csvParse(res.data);
+        console.log(_this.dataSamples)
+        for (var i = 0; i < _this.dataSamples.length; i++) {
+          var cluster = _this.dataSamples[i];
+          // console.log("cluster: ", cluster)
+          queue.push(cluster);
+        }
+        var label_list = [];
+        while (queue.length > 0) {
+          var cur = queue.shift();
+          console.log("cur: ", cur)
+          var cur_max = 0;
+          var cur_label = '';
+          Object.keys(cur).forEach(function(key, index){
+            // console.log(key);
+            console.log(_this.state.attributes)
+            if (_this.state.attributes.schema.includes(key) && cur[key] >= cur_max) {
+              cur_max = cur[key];
+              cur_label = key;
+            };
+          });
+          label_list.push([cur['cid'], cur_label, cur_max]);
+        };
+        console.log("label list:", label_list)
+        Object.keys(_this.dataSamples).forEach(function(key, index){
+          if (Number(key) != NaN && index < label_list.length) {
+            // key = Number(key)
+            // console.log(key)
+            _this.dataSamples[key].label = label_list[index][1];
+            console.log('in data samples:', _this.dataSamples[key].label)
+            console.log(_this.dataSamples[key])
+          }
+        });
         const margin = { top: 5, right: 5, bottom: 5, left: 5 }; // [Xiong] tweak this to control the plot position
         const outerHeight = this.visRef.clientHeight;
         const outerWidth = this.visRef.clientWidth;
@@ -103,6 +142,9 @@ class ClusterView extends Component {
     //   this.drawPoint(this.x, this.y, point, 1, 1);
     // });
 
+    //for each element of the array, the size corresponds to the number of the clusters
+    //  add a field to the array object, which represents a better cluster name you devised
+    //. 
     let elemEnter = this.svgChart.selectAll('circle')
                     .data(this.dataSamples)
                     .enter()
@@ -124,8 +166,10 @@ class ClusterView extends Component {
     // see https://bl.ocks.org/mbostock/1846692
     elemEnter.append('text')
       .text(function(d) {
-        const topwords = JSON.parse(d.topwords);
-        return Object.keys(topwords)[0];
+        console.log(d);
+        const label = d.label;
+        // console.log("d", d);
+        return label;
       })
       .style('font-size', function(d) {
         const r = (parseFloat(d['_csize']) + 1) * 30;

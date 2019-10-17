@@ -81,21 +81,23 @@ class ClusterView extends Component {
           cur = queue.shift();
           // console.log("cur: ", cur)
           cur_max = 0;
-          cur_label = '';
+          cur_label = 'undetermined';
           var index;
           var match;
           var greater;
           var data_index;
           var valence;
           Object.keys(cur).forEach(function(key, index){
-            if (cur['weighted_mean_sentiment'] >= 0) {
-                valence = 1;
-              } else {
-                valence = -1;
-              };
             // console.log(key);
             // console.log(_this.state.attributes)
             if (_this.state.attributes.schema.includes(key) && Math.abs(cur[key]) >= cur_max) {
+              if (cur['weighted_mean_sentiment'] >= 0 && cur[key] >= 0) {
+                valence = 1;
+              } else if (cur['weighted_mean_sentiment'] <= 0 && cur[key] <= 0) {
+                valence = -1;
+              } else {
+                return;
+              };
               match = false;
               greater = false;
               console.log("cur", cur)

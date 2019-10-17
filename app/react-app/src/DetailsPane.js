@@ -20,6 +20,7 @@ class DetailsPane extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      attributes: props.attributes,
       reviews: [],
       editorValue: '',
       history: [],
@@ -28,7 +29,7 @@ class DetailsPane extends Component {
     };
     this.starti = 0;
     this.reviews = [];
-    attributes = this.props.attributes;
+    // attributes = this.props.attributes;
 
     this.onClickLoadMore = this.onClickLoadMore.bind(this);
     this.runCell = this.runCell.bind(this);
@@ -300,7 +301,7 @@ class DetailsPane extends Component {
         <div className="schema-col">
           <SchemaPane 
             clusterTopwords={ this.props.clusterTopwords } 
-            attributes={this.props.attributes.map(attr => { return { text: attr, active: false } })}/>
+            attributes={this.state.attributes.map(attr => { return { text: attr, active: false } })}/>
         </div>
       </div>
     );

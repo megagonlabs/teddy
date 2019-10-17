@@ -214,6 +214,7 @@ class ClusterView extends Component {
     elemEnter.append('text')
       .text("No subclusters to display")
       .style('font-size', "30px")
+      .attr('opacity', .7)
       .attr('dx', 30)
       .attr('dy', d => {
         return this.height / 2 - 15;

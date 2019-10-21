@@ -877,12 +877,14 @@ class ClusterView extends Component {
 }
 
 function clusterMouseOver(d, circle, pane) {
-  const r = (parseFloat(d['_csize']) + 1) * 30;
+  const standard_view_size = 90000
+  const r = (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (pane.width*pane.height));
   d3.select(circle).transition().attr('r', r + 5).attr('fill-opacity', 0.5);
 }
 
 function clusterMouseOut(d, circle, pane) {
-  const r = (parseFloat(d['_csize']) + 1) * 30;
+  const standard_view_size = 90000
+  const r = (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (pane.width*pane.height));
   d3.select(circle).transition().attr('r', r).attr('fill-opacity', 1);
 }
 

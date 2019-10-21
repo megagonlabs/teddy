@@ -22,7 +22,8 @@ class ClusterView extends Component {
       barScale: 1,
       clusterHistDistances: null,
       colHists: [ {}, {}, {} ],
-      hasCentroids: false
+      hasCentroids: false,
+      standard_view_size: 90000
       // maxR: 0,
       // maxPCAX: 0,
       // maxPCAY: 0,
@@ -277,10 +278,9 @@ class ClusterView extends Component {
                     .data(this.dataSamples)
                     .enter()
                     .append('g');
-
+    let _this = this;
     let circles = elemEnter.append('circle');
     console.log(this.width, this.height)
-    const standard_view_size = 90000
     const width = this.width
     const height = this.height
     circles
@@ -288,7 +288,7 @@ class ClusterView extends Component {
       .attr('class', 'cluster-circle')
       .attr('cx', d => this.x(parseFloat(d['pca_x'])))
       .attr('cy', d => this.y(parseFloat(d['pca_y'])))
-      .attr('r', d => (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (width * height)))
+      .attr('r', d => (parseFloat(d['_csize']) + 1) * 30 / (this.state.standard_view_size / (width * height)))
       .style('stroke', '#bbb')
       .style('fill', d => d3.interpolateRdBu((parseFloat(d['weighted_mean_sentiment']) + 1) / 2));
 
@@ -305,8 +305,8 @@ class ClusterView extends Component {
       .style('font-size', function(d) {
         const r = (parseFloat(d['_csize']) + 1) * 30;
         console.log(width, height)
-        console.log(standard_view_size / (width*height))
-        const adjustedR = r  / (standard_view_size / (width*height));
+        console.log(_this.state.standard_view_size / (width*height))
+        const adjustedR = r  / (_this.state.standard_view_size / (width*height));
         // console.log(r)
         // console.log(adjustedR)
         // console.log(this.getComputedTextLength() * 10)
@@ -314,7 +314,7 @@ class ClusterView extends Component {
         // return Math.min(2 * r, (2 * r) / this.getComputedTextLength() * 10) + "px";
       })
       .attr('dx', d => {
-        const r = (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (this.width*this.height));
+        const r = (parseFloat(d['_csize']) + 1) * 30 / (this.state.standard_view_size / (this.width*this.height));
         return this.x(parseFloat(d['pca_x'])) - r / 1.5;
       })
       .attr('dy', d => {
@@ -323,7 +323,7 @@ class ClusterView extends Component {
       .style('fill', '#153d52');
 
 
-    const _this = this;
+    // const _this = this;
     // [Xiong] a very weird pattern so that we can pass the two "this" pointers
     // of two contexts
     this.svgChart.selectAll('circle')
@@ -877,14 +877,14 @@ class ClusterView extends Component {
 }
 
 function clusterMouseOver(d, circle, pane) {
-  const standard_view_size = 90000
-  const r = (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (pane.width*pane.height));
+  // const standard_view_size = 90000
+  const r = (parseFloat(d['_csize']) + 1) * 30 / (pane.state.standard_view_size / (pane.width*pane.height));
   d3.select(circle).transition().attr('r', r + 5).attr('fill-opacity', 0.5);
 }
 
 function clusterMouseOut(d, circle, pane) {
   const standard_view_size = 90000
-  const r = (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (pane.width*pane.height));
+  const r = (parseFloat(d['_csize']) + 1) * 30 / (pane.state.standard_view_size / (pane.width*pane.height));
   d3.select(circle).transition().attr('r', r).attr('fill-opacity', 1);
 }
 

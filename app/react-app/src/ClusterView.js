@@ -883,7 +883,7 @@ function clusterMouseOver(d, circle, pane) {
 }
 
 function clusterMouseOut(d, circle, pane) {
-  const standard_view_size = 90000
+  // const standard_view_size = 90000
   const r = (parseFloat(d['_csize']) + 1) * 30 / (pane.state.standard_view_size / (pane.width*pane.height));
   d3.select(circle).transition().attr('r', r).attr('fill-opacity', 1);
 }

@@ -22,11 +22,12 @@ class ClusterView extends Component {
       barScale: 1,
       clusterHistDistances: null,
       colHists: [ {}, {}, {} ],
-      maxR: 0,
-      maxPCAX: 0,
-      maxPCAY: 0,
-      minPCAX: 300,
-      minPCAY: 300
+      hasCentroids: false
+      // maxR: 0,
+      // maxPCAX: 0,
+      // maxPCAY: 0,
+      // minPCAX: 300,
+      // minPCAY: 300
     };
     console.log("attr", props.attributes)
     this.selectedClusters = [];
@@ -34,10 +35,23 @@ class ClusterView extends Component {
     this.switchScale = this.switchScale.bind(this);
     this.switchLayer = this.switchLayer.bind(this);
   }
+  updateDimensions = () => {
+    this.setState({ width: window.innerWidth, height: window.innerHeight });
+    this.clearCircles()
+    this.resize()
+    if (this.state.hasCentroids) {
+      this.draw();
+    } else {
+      this.drawBlank();
+    }
+
+  };
 
   componentDidMount() {
     this.loadLayer(this.props.bizId);
     this.loadGlobalInfo(this.props.bizId);
+    window.addEventListener('resize', this.updateDimensions);
+
 
     window.fixTopWords = (reverse = false) => {
       const selectedClusterInfo = this.state.selectedClusterInfo;
@@ -50,8 +64,28 @@ class ClusterView extends Component {
       }
     };
   }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.updateDimensions);
+  }
+
+  // componentDidUpdate() {
+  //   this.loadLayer(this.props.bizId);
+  //   this.loadGlobalInfo(this.props.bizId);
+  //   // window.fixTopWords = (reverse = false) => {
+  //   //   const selectedClusterInfo = this.state.selectedClusterInfo;
+  //     // if (reverse) {
+  //     //   this.loadTopWords(selectedClusterInfo[1].cid, selectedClusterInfo[0].cid, 1, true);
+  //     //   this.loadTopWords(selectedClusterInfo[1].cid, selectedClusterInfo[0].cid, 2, true);
+  //     // } else {
+  //     //   this.loadTopWords(selectedClusterInfo[0].cid, selectedClusterInfo[1].cid, 1, true);
+  //     //   this.loadTopWords(selectedClusterInfo[0].cid, selectedClusterInfo[1].cid, 2, true);
+  //     // }
+  //   // };
+
+  // }
 
   loadLayer(bizId, nextCluster) {
+
     let _this = this;
     var centroids = process.env.REACT_APP_SERVER_ADDRESS + 'centroids/';
     let url = new URL(centroids);
@@ -71,6 +105,7 @@ class ClusterView extends Component {
     d3.json(url).then(res => {
       console.log(res);
       if (res.type == 'centroids') {
+        _this.state.hasCentroids = true
         var queue = [];
         // console.log("attr:", _this.state.attributes);
         _this.dataSamples = d3.csvParse(res.data);
@@ -85,29 +120,29 @@ class ClusterView extends Component {
         var cur_max;
         var cur_label;
         var cur;
-        var cur_r;
-        var cur_max_x;
-        var cur_max_y;
-        var cur_min_x;
-        var cur_min_y;
+        // var cur_r;
+        // var cur_max_x;
+        // var cur_max_y;
+        // var cur_min_x;
+        // var cur_min_y;
         while (queue.length > 0) {
           cur = queue.shift();
-          cur_r = (parseFloat(cur['_csize']) + 1) * 30;
-          if (cur_r > _this.state.maxR) {
-            _this.state.maxR = cur_r;
-          }
-          if (cur['pca_x'] > _this.state.maxPCAX) {
-            _this.state.maxPCAX = cur['pca_x']
-          }
-          if (cur['pca_y'] > _this.state.maxPCAY) {
-            _this.state.maxPCAY = cur['pca_y']
-          }
-          if (cur['pca_x'] < _this.state.minPCAX) {
-            _this.state.minPCAX = cur['pca_x']
-          }
-          if (cur['pca_y'] < _this.state.minPCAY) {
-            _this.state.minPCAY = cur['pca_y']
-          }
+          // cur_r = (parseFloat(cur['_csize']) + 1) * 30;
+          // if (cur_r > _this.state.maxR) {
+          //   _this.state.maxR = cur_r;
+          // }
+          // if (cur['pca_x'] > _this.state.maxPCAX) {
+          //   _this.state.maxPCAX = cur['pca_x']
+          // }
+          // if (cur['pca_y'] > _this.state.maxPCAY) {
+          //   _this.state.maxPCAY = cur['pca_y']
+          // }
+          // if (cur['pca_x'] < _this.state.minPCAX) {
+          //   _this.state.minPCAX = cur['pca_x']
+          // }
+          // if (cur['pca_y'] < _this.state.minPCAY) {
+          //   _this.state.minPCAY = cur['pca_y']
+          // }
 
           // console.log("cur: ", cur)
           cur_max = 0;
@@ -169,55 +204,64 @@ class ClusterView extends Component {
             // console.log(_this.dataSamples[key])
           }
         });
-        const margin = { top: 5, right: 5, bottom: 5, left: 5 }; // [Xiong] tweak this to control the plot position
-        const outerHeight = this.visRef.clientHeight;
-        const outerWidth = this.visRef.clientWidth;
-        const height = outerHeight - margin.top - margin.bottom;
-        const width = outerWidth - margin.left - margin.right;
-        _this.width = width;
-        _this.height = height;
-
-        const container = d3.select('.cluster-vis');
-
-        // Init Canvas
-        d3.select(_clusterCanvas)
-          .attr('width', width)
-          .attr('height', height)
-          .style('margin-left', margin.left + 'px')
-          .style('margin-top', margin.top + 'px')
-          .attr('class', 'canvas-plot');
-        document.querySelector('.cluster-vis').append(_clusterCanvas);
-        _this.canvasChart = d3.select(_clusterCanvas);
-
-        // Init SVG
-        const svgChart = container.append('svg:svg')
-          .attr('width', outerWidth)
-          .attr('height', outerHeight)
-          .attr('class', 'svg-plot')
-          .append('g')
-          .attr('transform', `translate(${margin.left}, ${margin.top})`);
-        _this.svgChart = svgChart;
-
-        _this.initScales();
+        _this.resize()
+        _this.draw()
 
         // Initial draw made with no zoom
-        _this.draw();
       } else {
+        _this.state.hasCentroids = false;
         _this.drawBlank();
         // maybe draw points in the plot
         // console.log(d3.csvParse(res.data));
       }
     });
   }
+
+  resize() {
+    const _this = this
+    const margin = { top: 5, right: 5, bottom: 5, left: 5 }; // [Xiong] tweak this to control the plot position
+    var outerHeight = this.visRef.clientHeight;
+    var outerWidth = this.visRef.clientWidth;
+    var height = outerHeight - margin.top - margin.bottom;
+    var width = outerWidth - margin.left - margin.right;
+    _this.width = width;
+    _this.height = height;
+    const container = d3.select('.cluster-vis');
+
+    // Init Canvas
+    d3.select(_clusterCanvas)
+      .attr('width', width)
+      .attr('height', height)
+      .style('margin-left', margin.left + 'px')
+      .style('margin-top', margin.top + 'px')
+      .attr('class', 'canvas-plot');
+    document.querySelector('.cluster-vis').append(_clusterCanvas);
+    _this.canvasChart = d3.select(_clusterCanvas);
+
+    // Init SVG
+    const svgChart = container.append('svg:svg')
+      .attr('width', outerWidth)
+      .attr('height', outerHeight)
+      .attr('class', 'svg-plot')
+      .append('g')
+      .attr('transform', `translate(${margin.left}, ${margin.top})`);
+    _this.svgChart = svgChart;
+
+    _this.initScales();
+  }
+
   drawBlank() {
     let elemEnter = this.svgChart;
+    console.log(this.width, this.height)
+    const fontSizeInt = this.width / 15
+    const fontSize = fontSizeInt + 'px'
     elemEnter.append('text')
       .text("No subclusters to display")
-      .style('font-size', "30px")
+      .style('font-size', fontSize)
       .attr('opacity', .7)
-      .attr('dx', 30)
+      .attr('dx', this.width / 8)
       .attr('dy', d => {
-        return this.height / 2 - 15;
+        return this.height / 2 - fontSizeInt /2;
       })
       .style('fill', '#153d52');
   };
@@ -235,13 +279,16 @@ class ClusterView extends Component {
                     .append('g');
 
     let circles = elemEnter.append('circle');
-
+    console.log(this.width, this.height)
+    const standard_view_size = 90000
+    const width = this.width
+    const height = this.height
     circles
       .transition()
       .attr('class', 'cluster-circle')
       .attr('cx', d => this.x(parseFloat(d['pca_x'])))
       .attr('cy', d => this.y(parseFloat(d['pca_y'])))
-      .attr('r', d => (parseFloat(d['_csize']) + 1) * 30)
+      .attr('r', d => (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (width * height)))
       .style('stroke', '#bbb')
       .style('fill', d => d3.interpolateRdBu((parseFloat(d['weighted_mean_sentiment']) + 1) / 2));
 
@@ -257,11 +304,18 @@ class ClusterView extends Component {
       })
       .style('font-size', function(d) {
         const r = (parseFloat(d['_csize']) + 1) * 30;
-        return Math.min(2 * r, (2 * r - 8) / this.getComputedTextLength() * 10) + "px";
+        console.log(width, height)
+        console.log(standard_view_size / (width*height))
+        const adjustedR = r  / (standard_view_size / (width*height));
+        // console.log(r)
+        // console.log(adjustedR)
+        // console.log(this.getComputedTextLength() * 10)
+        return Math.min(adjustedR, adjustedR / (this.getComputedTextLength())*20)  + 'px';
+        // return Math.min(2 * r, (2 * r) / this.getComputedTextLength() * 10) + "px";
       })
       .attr('dx', d => {
-        const r = (parseFloat(d['_csize']) + 1) * 30;
-        return this.x(parseFloat(d['pca_x'])) - r / 2;
+        const r = (parseFloat(d['_csize']) + 1) * 30 / (standard_view_size / (this.width*this.height));
+        return this.x(parseFloat(d['pca_x'])) - r / 1.5;
       })
       .attr('dy', d => {
         return this.y(parseFloat(d['pca_y'])) + 5;
@@ -335,12 +389,13 @@ class ClusterView extends Component {
       x1: d3.max(this.dataSamples, (d) => parseFloat(d[`${reduction}_x`])) + 0.3,
       y1: d3.max(this.dataSamples, (d) => parseFloat(d[`${reduction}_y`])) + 0.3
     };
-    console.log("x0", this.sampleRange.x0, "y0", this.sampleRange.y0)
-    console.log("x1", this.sampleRange.x1, "y1", this.sampleRange.y1)
-    console.log('width', this.width, 'height', this.height)
-    console.log("maxR", this.state.maxR)
-    console.log("maxPCAX", this.state.maxPCAX, "minPCAX", this.state.minPCAX)
-    console.log("maxPCAY", this.state.maxPCAY, "minPCAY", this.state.minPCAY)
+    console.log('x0', this.sampleRange.x0, 'y0', this.sampleRange.y0, 'x1', this.sampleRange.x1, 'y1', this.sampleRange.y1)
+    // console.log("x0", this.sampleRange.x0, "y0", this.sampleRange.y0)
+    // console.log("x1", this.sampleRange.x1, "y1", this.sampleRange.y1)
+    // console.log('width', this.width, 'height', this.height)
+    // console.log("maxR", this.state.maxR)
+    // console.log("maxPCAX", this.state.maxPCAX, "minPCAX", this.state.minPCAX)
+    // console.log("maxPCAY", this.state.maxPCAY, "minPCAY", this.state.minPCAY)
 
     // this.width = 100;
     this.x = d3.scaleLinear().domain([this.sampleRange.x0, this.sampleRange.x1]).range([0, this.width]).nice();
@@ -586,6 +641,7 @@ class ClusterView extends Component {
         color: centroid[k] > 0 ? '#4c78a8': '#96312e'
       }
     });
+    console.log("at spec: ", window.width)
     let spec = {
       "data": { "values": values },
       "mark": "bar",

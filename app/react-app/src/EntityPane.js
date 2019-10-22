@@ -40,7 +40,6 @@ class EntityPane extends Component {
     const existingScript = document.getElementById('googleMaps');
     if (!existingScript) {
       const script = document.createElement('script');
-      console.log(process.env)
       const ggApiKey = process.env.REACT_APP_GOOGLE_API_KEY;
       if (ggApiKey === '') {
         console.error('[Teddy Bark] Google API Key is EMPTY!');
@@ -74,8 +73,6 @@ class EntityPane extends Component {
     });
 
     d3.json(hotel_sections_json).then(data => {
-      console.log(data);
-
       data.children.forEach((d, i) => {
         d3.select('.entities').append('h4').text(`Section ${i}`);
         this.addTreemap(d);
@@ -139,7 +136,6 @@ class EntityPane extends Component {
     leaf.append("text")
       .attr("clip-path", d => d.clipUid)
       .selectAll("tspan")
-      // .data(d => { console.log(d); return d.data.name.split(/(?=[A-Z][^A-Z])/g).concat(format(d.value)); })
       .data(d => [d.data.rcount, ''])
       .join("tspan")
       .attr("x", 3)
@@ -157,7 +153,6 @@ class EntityPane extends Component {
         return d3.select(this).style('fill', d3.interpolateRdBu(parseFloat(d.data.mean_score) / 100))
       })
       .on('click', function (d, e) {
-        console.log(d);
         const rectPos = d3.select(this).node().getBoundingClientRect();
 
         if (_this.lastSelectedHotel) {
@@ -196,10 +191,8 @@ class EntityPane extends Component {
     this.service.getDetails(request, (place, status) => {
       const OK = window.google.maps.places.PlacesServiceStatus.OK;
       if ((status == OK) && (place.photos)) {
-        // console.log(place.photos[0].getUrl());
         this.setState({ cardPhotoUrl: place.photos[0].getUrl() });
       } else {
-        console.log(place, status);
         this.setState({ cardPhotoUrl: 'teddy-na.jpg' });
       }
     });
@@ -243,7 +236,6 @@ class EntityPane extends Component {
   }
 
   loadHotelCluster() {
-    // console.log(this.state.cardBizId);
     this.closeCard();
 
     this.props.onLoadHotelCluster({
@@ -269,7 +261,6 @@ class EntityPane extends Component {
     const sectioni = e.target.getAttribute('sectioni');
     const hoteli = e.target.getAttribute('hoteli');
     this.setState({ selectedSectioni: sectioni, selectedHoteli: hoteli });
-    console.log(this.state.hotelsList[sectioni]['children'][hoteli]);
     this.loadEntityCard(e.target.getBoundingClientRect(), this.state.hotelsList[sectioni]['children'][hoteli]);
   }
 
@@ -280,7 +271,6 @@ class EntityPane extends Component {
     const cardPhotoUrl = this.state.cardPhotoUrl;
     const hotelsList = this.state.hotelsList;
     const attributes = this.state.attributes;
-    console.log("attribute, entityPane", attributes)
 
     return (
       <div className="entity-pane">

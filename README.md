@@ -21,7 +21,13 @@ __<a name='Demo'></a>[You can also try Teddy online here!](http://ec2-54-67-71-1
 
 <img src="results/Teddy_CHI.gif" width="900"/>
 
-Above: the Teddy User Interface. From left to right we have the Entity View displaying the entities mentioned in reviews, the Cluster View for exploring aggregate statistics over hierarchical clusters of reviews, the Detail View for viewing and filtering/sorting individual reviews, and the Schema Generation View for recording aspects of interest from the reviews. 
+Above: The Teddy user interface. From left to right we have the Entity View displaying the entities mentioned in reviews, the Cluster View for exploring aggregate statistics over hierarchical clusters of reviews, the Detail View for viewing and filtering/sorting individual reviews, and the Schema Generation View for recording aspects of interest from the reviews. 
+
+
+<img src="results//teddy_overview_large2.svg" width="900"/>
+
+Above: The Teddy review exploration pipeline. Users can customize the data processing pipeline based on their task, whether it
+is classification, opinion extraction, or representation learning, and use Teddy to gain insights about their data and model. They can also use the application to iterate on the data processing pipeline, for example by creating a new schema that describes attributes of their review corpus. 
 
 <a name='InterviewStudy'></a><h3> Motivation: An Interview Study into Review Analysis Practices and Challenges </h3> 
 ---------------------------------------

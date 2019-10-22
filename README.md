@@ -23,6 +23,8 @@ __<a name='Demo'></a>[You can also try Teddy online here!](http://ec2-54-67-71-1
 
 Above: The Teddy user interface. From left to right we have the Entity View displaying the entities mentioned in reviews, the Cluster View for exploring aggregate statistics over hierarchical clusters of reviews, the Detail View for viewing and filtering/sorting individual reviews, and the Schema Generation View for recording aspects of interest from the reviews. 
 
+<br/>
+<br/>
 
 <img src="results//teddy_overview_large2.svg" width="900"/>
 

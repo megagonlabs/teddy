@@ -1,8 +1,9 @@
-from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer
-from collections import Counter
-import sys
-from libs.review_db import ReviewDB
 import numpy as np
+import sys
+
+from collections import Counter
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 
 class TFIDFModel:
     def __init__(self, db, ngramsize=1):

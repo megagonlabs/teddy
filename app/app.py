@@ -23,20 +23,17 @@ logging.basicConfig(format='%(filename)s:%(lineno)d %(message)s')
 log = logging.getLogger(__name__)
 log.setLevel('INFO')
 
+# set up data access
 CONFIG = json.load(open("./../config.json"))
 data_folder = os.path.join(os.environ['DATA_DIR'], CONFIG['dataset'])
 schema = json.load(open(os.path.join(data_folder, 'schema.json')))['schema']
+database = ReviewDB(data_folder)
 
 app = Flask(__name__, static_folder = './react-app/build/static', template_folder = './react-app/build')
 cors = CORS(app)
 
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['TEMPLATES_AUTO_RELOAD'] = True
-
-database = ReviewDB(data_folder)
-
-tfidf_model = TfidfModel.TFIDFModel(database.db("all"))
-tfidf_model_2g = TfidfModel.TFIDFModel(database.db("all"), 2)
 
 histogram_comparison_utils = HistogramComparison()
 
@@ -173,26 +170,13 @@ def cluster_topwords():
     cid1 = request.args.get('cid1')
     cid2 = request.args.get('cid2')
     ngramsize = int(request.args.get('ngramsize'))
-    #fixed = bool(int(request.args.get('fixed')))
-    fixed=False
-    cur_tfidf_model = tfidf_model
-    if ngramsize == 2:
-        cur_tfidf_model = tfidf_model_2g
-    if biz_id != 'all':
-        db_biz = None#ReviewDB.load(cluster_file = hotel_attr_path(biz_id))
-        cur_tfidf_model = TfidfModel.TFIDFModel(db_biz, ngramsize)
 
-    topwords = None
+    topwords = [database.get_topwords(biz_id, cid1, ngramsize)]
     # [Xiong] Revise this part to make it more efficient!
     # Right now it's just a simple and dirty hack.
     if cid2 != None:
-        if fixed:
-            topwords = cur_tfidf_model.compare_fixed_set(cid1, cid2)
-        else:
-            topwords = [cur_tfidf_model.top_k(cid1), cur_tfidf_model.top_k(cid2)]
-    else:
-        topwords = [cur_tfidf_model.top_k(cid1)]
-
+        topwords.append(database.get_topwords(biz_id, cid2, ngramsize))
+    log.info(topwords)
     res = Response(json.dumps(topwords), status = 200, mimetype = 'application/json')
     return res
 

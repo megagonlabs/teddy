@@ -1,7 +1,9 @@
+import json
+import logging
 import os
 import pandas as pd
-import logging
-import json
+
+from .TfidfModel import TFIDFModel
 logging.basicConfig(format='%(filename)s:%(lineno)d %(message)s')
 log = logging.getLogger(__name__)
 log.setLevel('INFO')
@@ -14,25 +16,45 @@ class ReviewDB():
         self.entity_db_dict = {
             "all": EntityDB("all", data_folder)
         }
+        self.tfidf_dict = {
+            name: TFIDFModel(db) for name, db in self.entity_db_dict.items()
+        }
+        self.tfidf_bigram_dict = {
+            name: TFIDFModel(db, 2) for name, db in self.entity_db_dict.items()
+        }
 
-    def db(self, entity_id):
+    def _add_ent(self, entity_id):
+        db = EntityDB("all", data_folder)
+        self.entity_db_dict[entity_id] = db
+        self.tfidf_dict[entity_id] = TFIDFModel(db)
+        self.tfidf_bigram_dict[entity_id] = TFIDFModel(db, 2)
+
+    def _db(self, entity_id):
         if not entity_id in self.entity_db_dict:
-            self.entity_db_dict[entity_id] = EntityDB(entity_id, data_folder)
+            self._add_ent(entity_id)
         return self.entity_db_dict[entity_id]
 
     def get_reviews(self, entity_id, reviews_id):
-        db = self.db(entity_id)
+        db = self._db(entity_id)
         return db.get_review_from_id(reviews_id)
 
     def get_cluster(self, entity_id, cluster_id):
-        db = self.db(entity_id)
+        db = self._db(entity_id)
         return db.get_cluster_from_id(cluster_id)
 
     def get_centroids(self, entity_id, cluster_id):
-        db = self.db(entity_id)
+        db = self._db(entity_id)
         return db.get_centroids_from_id(cluster_id)
 
-
+    def get_topwords(self, entity_id, cluster_id, k=1):
+        if not entity_id in self.entity_db_dict:
+            self._add_ent(entity_id)
+        if k == 1:
+            return self.tfidf_dict[entity_id].top_k(cluster_id)
+        elif k == 2:
+            return self.tfidf_bigram_dict[entity_id].top_k(cluster_id)
+        else:
+            return Exception("Invalid value {} for k. There is only support for k=1 and k=2".format(k))
 
 class EntityDB():
     def __init__(self, entity_id, data_folder):

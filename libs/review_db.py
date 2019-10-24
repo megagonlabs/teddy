@@ -1,280 +1,159 @@
 import json
 import logging
-import numpy as np
 import os
 import pandas as pd
 
-from collections import Counter
-from flask import Flask
-from flask import Response
-from flask import request
-from flask import send_from_directory
-from flask_cors import CORS
-from libs import nlp_length_functions
-from libs.histogram_comparisons import HistogramComparison
-from libs.review_db import ReviewDB
-
-# logging configurations
+from .TfidfModel import TFIDFModel
 logging.basicConfig(format='%(filename)s:%(lineno)d %(message)s')
 log = logging.getLogger(__name__)
 log.setLevel('INFO')
 
-# set up data access
-CONFIG = json.load(open("./../config.json"))
-data_folder = os.path.join(os.environ['DATA_DIR'], CONFIG['dataset'])
-schema = json.load(open(os.path.join(data_folder, 'schema.json')))['schema']
-database = ReviewDB(data_folder)
+# print(CONFIG['dataset'])
+if 'DATA_DIR' in os.environ.keys():
+    CONFIG = json.load(open('../config.json'))
+    data_folder = os.path.join(os.environ['DATA_DIR'], CONFIG['dataset'])
+else:
+    data_folder = os.path.join('/data/tripadvisor_hotel')
 
-app = Flask(__name__, static_folder = './react-app/build/static', template_folder = './react-app/build')
-cors = CORS(app)
+class ReviewDB():
+    def __init__(self, data_folder=data_folder):
+        self.entity_db_dict = {
+            "all": EntityDB("all", data_folder)
+        }
+        self.tfidf_dict = {
+            name: TFIDFModel(db) for name, db in self.entity_db_dict.items()
+        }
+        self.tfidf_bigram_dict = {
+            name: TFIDFModel(db, 2) for name, db in self.entity_db_dict.items()
+        }
 
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-app.config['TEMPLATES_AUTO_RELOAD'] = True
+    def _add_ent(self, entity_id):
+        db = EntityDB("all", data_folder)
+        self.entity_db_dict[entity_id] = db
+        self.tfidf_dict[entity_id] = TFIDFModel(db)
+        self.tfidf_bigram_dict[entity_id] = TFIDFModel(db, 2)
 
-histogram_comparison_utils = HistogramComparison()
+    def _db(self, entity_id):
+        if not entity_id in self.entity_db_dict:
+            self._add_ent(entity_id)
+        return self.entity_db_dict[entity_id]
 
-# [Xiong] endpoint for sending static files
-@app.route('/data/<path:subpath>')
-def data(subpath):    
-    res = send_from_directory(f'{data_folder}', subpath)
-    return res
+    def get_reviews(self, entity_id, reviews_id):
+        db = self._db(entity_id)
+        return db.get_review_from_id(reviews_id)
 
-# [Xiong] endpoint for loading cluster centroids
-# GET Args:
-#   biz_id: id for locating an entity (e.g. hotel)
-#   cid: id for locating a cluster
-# Returns:
-#   A csv string of requested centroids
-@app.route('/centroids/')
-def centroids():
-    res = None
-    biz_id = request.args.get('biz_id')
-    log.info(f'requesting centroids for {biz_id}')
-    cid = request.args.get('cid')
-    centroids = database.get_centroids(biz_id, cid)
-    # log.info("centroid shape: " + str(centroids.shape[0]))
-    if centroids is None:
-        return Response(json.dumps({ 'type': 'reviews', 'data': database.get_reviews(biz_id, cid).to_csv() }), status = 200, mimetype = 'application/json')
-    return Response(json.dumps({ 'type': 'centroids', 'data': centroids.to_csv() }), status = 200, mimetype = 'application/json')
+    def get_cluster(self, entity_id, cluster_id):
+        db = self._db(entity_id)
+        return db.get_cluster_from_id(cluster_id)
 
-# [Xiong] endpoint for loading overall information for an entity (or all
-# entities). It includes average char, word, sentence length, top words, top
-# bigrams, cluster attribute histograms and averaged attributes
-# GET Args:
-#   biz_id: id for locating an entity (e.g. hotel)
-# Returns:
-#   A csv string of requested info
-@app.route('/global-info/')
-def global_info():
-    biz_id = request.args.get('biz_id')
-    info = database.get_cluster(biz_id, 'all')
-    res = Response(info.to_csv(), status = 200, mimetype = 'application/csv')
-    return res
+    def get_centroids(self, entity_id, cluster_id):
+        db = self._db(entity_id)
+        return db.get_centroids_from_id(cluster_id)
 
-# [Xiong] endpoint for loading information for a certain cluster. It includes
-# average char, word, sentence length, and cluster attribute histograms. The
-# averaged char, word and sentence length and averaged attributes are loaded
-# from another endpoint. We probably need to refactor this two endpoints into
-# one.
-# GET Args:
-#   biz_id: id for locating an entity (e.g. hotel)
-#   cid: id for locating a cluster
-# Returns:
-#   A JSON string of the requested info
-@app.route('/cluster-details/')
-def cluster_details():
-    biz_id = request.args.get('biz_id')
-    cid = request.args.get('cid')
-    selected_cluster_df = database.get_cluster(biz_id, 'all')
-    cluster_row = selected_cluster_df.iloc[0]
+    def get_topwords(self, entity_id, cluster_id, k=1):
+        if not entity_id in self.entity_db_dict:
+            self._add_ent(entity_id)
+        if k == 1:
+            return self.tfidf_dict[entity_id].top_k(cluster_id)
+        elif k == 2:
+            return self.tfidf_bigram_dict[entity_id].top_k(cluster_id)
+        else:
+            return Exception("Invalid value {} for k. There is only support for k=1 and k=2".format(k))
 
-    detail = { 'hists': {} }
-    for attr in schema:
-        detail['hists'][attr] = list(map(lambda x: int(x), cluster_row[attr + '_hist'].split()))
-    detail['div'] = (np.array(list(range(-10, 11, 1))) / 10).tolist()
+class EntityDB():
+    def __init__(self, entity_id, data_folder):
+        if entity_id != "all":
+            old_data_folder = data_folder
+            data_folder = os.path.join(os.path.join(data_folder, 'hotel-clusters'), entity_id)
+            if not os.path.exists(data_folder) and os.path.exists(data_folder):
+                raise FileNotFoundError("business_id {0} not found in file {1}".format(entity_id, old_data_folder))
+        try:
+            cluster_file=os.path.join(data_folder, 'clusters.csv')
+            clusters_df = pd.read_csv(cluster_file, index_col=0)
+        except FileNotFoundError:
+            cluster_file=os.path.join(data_folder, 'attr.csv')
+            clusters_df = pd.read_csv(cluster_file, index_col=0)
+        centroids_file=os.path.join(data_folder, 'centroids.csv')
+        if centroids_file is not None:
+            try:
+                centroids_df = pd.read_csv(centroids_file)
+                log.info(centroids_file + ' loaded')
+            except FileNotFoundError:
+                centroids_df = None
+        else:
+            centroids_df = None
 
-    detail['avgCharLength'] = cluster_row['charLength']
-    detail['avgWordLength'] = cluster_row['wordLength']
-    detail['avgSentLength'] = cluster_row['sentLength']
+        self.centroids_df = centroids_df
+        self.clusters_df = clusters_df
+        self.clusters_df['review_id'] = pd.Series(self.clusters_df.index, index=self.clusters_df.index)
 
-    res = Response(json.dumps(detail), status = 200, mimetype = 'application/json')
-    return res
+    def get_review_from_id(self, _id):
+        '''
+        Args:
+                _id: id for a review or a cluster
 
-# [Xiong] endpoint for /cluster-details/ functionalities but computed on the fly
-@app.route('/cluster-details-live/')
-def cluster_details_live():
-    biz_id = request.args.get('biz_id')
-    cid = request.args.get('cid')
-    selected_cluster_df = database.get_cluster(biz_id, cid)
-    # selected_cluster_df = db.get_cluster_from_id(cid)
+            Returns:
+                list of review objects
+            Note: this is the main entrypoint for retrieving reviews with a given id
+        '''
+        id_list = self.decode_id(_id)
+        return self.fetch_reviews(id_list)
 
-    detail = { 'hists': {} }
-    div = None
-    for attr in schema:
-        hist, div = np.histogram(selected_cluster_df[attr], bins = 20, range = (-1, 1))
-        detail['hists'][attr] = hist.tolist()
-    detail['div'] = div.tolist()
 
-    nlp = nlp_length_functions.NLPLengths(db)
-    detail['avgCharLength'] = nlp.char_review_length_counter(cid)[1]
-    detail['avgWordLength'] = nlp.word_token_review_length_counter(cid)[1]
-    detail['avgSentLength'] = nlp.sent_token_review_length_counter(cid)[1]
+    def get_cluster_from_id(self, _id):
+        '''
+        Args:
+                _id: id for a cluster
+            Returns:
+                a dataframe row for the cluster centroid
+        '''
+        return self.centroids_df.query(f'cid == "{_id}"')
 
-    res = Response(json.dumps(detail), status = 200, mimetype = 'application/json')
-    return res
+    def get_centroids_from_id(self, _id):
+        if _id is not None:
+            # log.log("test5")
+            clayer = len(_id.split('-'))
+            layer_centroids_df = self.centroids_df[self.centroids_df['clayer'] == clayer]  
+            cur_centroids_df = layer_centroids_df[layer_centroids_df['cid'].str.startswith(_id + '-')]
+            if cur_centroids_df.shape[0] == 0:
+                # return self.get_review_from_id(_id)
+                #If we want to display something other than a message when there are no clusters we should change this
+                return None
+            return cur_centroids_df
+        return self.centroids_df[self.centroids_df['clayer'] == 0]
 
-# [Xiong] endpoint for computing the distance between the histograms of two clusters.
-# GET Args:
-#   biz_id: id for locating an entity (e.g. hotel)
-#   cid1: id for locating the first cluster to compare
-#   cid2: id for locating the second cluster to compare
-# Returns:
-#   A JSON string of the distance array
-@app.route('/histogram-comparison/')
-def histogram_comparison():
-    biz_id = request.args.get('biz_id')
-    cid1 = request.args.get('cid1')
-    cid2 = request.args.get('cid2')
-    cluster_row1 = database.get_cluster(biz_id, cid1).iloc[0]
-    cluster_row2 = database.get_cluster(biz_id, cid2).iloc[0]
-    hist_distances = {}
-    for attr in schema:
-        hist1 = dict(zip(list(range(20)), list(map(lambda x: int(x), cluster_row1[attr + '_hist'].split()))))
-        hist2 = dict(zip(list(range(20)), list(map(lambda x: int(x), cluster_row2[attr + '_hist'].split()))))
-        dist = histogram_comparison_utils.hellinger(Counter(hist1), Counter(hist2))
-        hist_distances[attr] = dist
+    def decode_id(self, _id):
+        '''
+        Args:
+                _id: id for a review or a cluster
 
-    res = Response(json.dumps(hist_distances), status = 200, mimetype = 'application/json')
-    return res
+            Returns:
+                list of strings: [review_id1, review_id2] for all reviews in the review or cluster _id
+            Note: helper function
+        '''
+        if _id == "all": #special case for querying over all reviews in the db
+            return list(self.clusters_df['review_id'])
+        if _id is None or _id == []:
+            return None
+        if type(_id) is int: #if review
+            return [_id]
+        else: #if cluster
+            cluster_history = _id.split('-')
+            condition = list(map(lambda i: f'L{i} == {cluster_history[i]}', range(len(cluster_history))))
+            relevant_subset = self.clusters_df.query(' and '.join(condition))
+            return list(relevant_subset['review_id'])
 
-# [Xiong] endpoint for computing the top n-grams of specified clusters. If two
-# cluster ids are given, a comparison will be done.
-# Args:
-#   biz_id: id for locating an entity (e.g. hotel)
-#   cid1: id for locating the first cluster to compute
-#   cid2 - optional: id for locating the first cluster to compute
-#   ngramsize: an interger N specifies what N-gram to compute. Currently only
-#           unigram and bigrams are used in the prototype
-#   fixed: True or False to compute the second topgram scores for the topgrams
-#           from the first cluster
-# Returns:
-#   A JSON string of an array of topwords objects (word => score)
-@app.route('/cluster-topngrams/')
-def cluster_topwords():
-    # detail['topwords'] = tfidf_model.top_k(cid, 5)
-    biz_id = request.args.get('biz_id')
-    cid1 = request.args.get('cid1')
-    cid2 = request.args.get('cid2')
-    ngramsize = int(request.args.get('ngramsize'))
+    def fetch_reviews(self, id_list):
+        '''
+        Args:
+                id_list: list of review id strings
 
-    topwords = [database.get_topwords(biz_id, cid1, ngramsize)]
-    # [Xiong] Revise this part to make it more efficient!
-    # Right now it's just a simple and dirty hack.
-    if cid2 != None:
-        topwords.append(database.get_topwords(biz_id, cid2, ngramsize))
-    log.info(topwords)
-    res = Response(json.dumps(topwords), status = 200, mimetype = 'application/json')
-    return res
-
-# [Xiong] endpoint for loading review objects (text and other stats) from
-# current working dataframe or freshly from a cluster (resetting working_df).
-# If two cluster ids are given, the working_df will be set to concatenation
-# of the reviews of two clusters.
-# Args:
-#   biz_id: id for locating an entity (e.g. hotel)
-#   cid: id for locating the first cluster
-#   cid2 - optional: id for locating the second cluster
-#   starti: the starting index (for the "load more" feature)
-# Returns:
-#   A csv string of 10 reviews from working_df
-@app.route('/cluster-reviews/')
-def cluster_reviews():
-    global working_df
-
-    biz_id = request.args.get('biz_id')
-    cid = request.args.get('cid')
-    cid2 = request.args.get('cid2')
-    starti = int(request.args.get('starti'))
-    if starti == 0:
-        working_df = None
-
-    response_df = select_reviews_from_working_df(biz_id, cid, starti, cid2)
-
-    res = Response(response_df.to_csv(), status = 200, mimetype = 'text/csv')
-    return res
-
-# [Xiong] endpoint for running command line code on the server. Essentially what
-# we do is to manipulate the working_df.
-# Args:
-#   biz_id: id for locating an entity (e.g. hotel)
-#   cid: id for locating the first cluster
-#   cid2 - optional: id for locating the second cluster
-#   code: the function name and arguments of the code we want to run on server.
-#   starti: the starting index (this is usually set to 0 from the front-end)
-# Returns:
-#   A csv string of 10 reviews from working_df after applying the requested operation
-@app.route('/remote-run/')
-def remote_run():
-    global working_df # adding this because we need to write to it
-
-    biz_id = request.args.get('biz_id')
-    cid = request.args.get('cid')
-    cid2 = request.args.get('cid2')
-    code = json.loads(request.args.get('code'))
-    starti = int(request.args.get('starti'))
-    func = code['func']
-    args = code['args']
-
-    response_df = None
-    if func == 'tSort':
-        attr = args[0]
-        ascending = True if len(args) < 2 else args[1]
-        working_df = working_df.sort_values(attr, ascending = ascending)
-        response_df = select_reviews_from_working_df(biz_id, cid, starti, cid2)
-    elif func == 'tFilter':
-        attr = args[0]
-        working_df = working_df[working_df[attr] != 0]
-        response_df = select_reviews_from_working_df(biz_id, cid, starti, cid2)
-    elif func == 'tGrep':
-        pattern = args[0]
-        working_df = working_df[working_df.text.str.contains(pattern)]
-        response_df = select_reviews_from_working_df(biz_id, cid, starti, cid2)
-    elif func == 'tReset':
-        working_df = None
-        response_df = select_reviews_from_working_df(biz_id, cid, starti, cid2)
-    else:
-        # TODO return an error message
-        pass
-
-    res = Response(response_df.to_csv(), status = 200, mimetype = 'application/json')
-    return res
-
-def select_reviews_from_working_df(biz_id, cid, starti, cid2 = '-1'):
-    '''
-    Pick 10 reviews from the current working dataframe starting from starti, and
-    reset it based on biz_id and cid if working_df is None. The design of
-    working_df is because of the command line feature on the front-end. When we
-    run remote code, we work on the working_df so that we can keep the original
-    data copy intact.
-    Args:
-        biz_id: id for locating an entity (e.g. hotel)
-        cid: id for locating a cluster
-        starti: starting index of the working_df (returns 10 reviews from that)
-        cid2 - optional: id for locating a second cluster to concatenate with if
-            specified.
-    Returns:
-        dataframe of 10 (or fewer) reviews from working_df
-    '''
-    global working_df # adding this because we need to write to it
-
-    if working_df is None:
-        working_df = database.get_reviews(biz_id, cid)
-        if cid2 != '-1':
-            working_df = pd.concat([working_df, database.get_reviews(biz_id, cid2)])
-
-    reviews_slice_df = working_df.iloc[starti:starti + 10]
-
-    return reviews_slice_df
-
-if __name__=='__main__':
-    app.run(host='0.0.0.0', port=5000)
+            Returns:
+                list of review objects
+            Note: helper function
+        '''
+        if not id_list:
+            return None
+        matches = self.clusters_df.review_id.isin(id_list)
+        review_match_df = self.clusters_df[matches]
+        return review_match_df

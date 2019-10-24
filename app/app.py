@@ -40,26 +40,10 @@ tfidf_model_2g = TfidfModel.TFIDFModel(database.db("all"), 2)
 
 histogram_comparison_utils = HistogramComparison()
 
-# [Xiong] setups for CORS access. I do this because I test the frontend on
-# localhost:3000, while the server runs on localhost:5000. Eventually the CORS
-# setup will make it possible for data server and front-end hosting server
-# running on different machines --- which may not be necessary though
-@app.after_request
-def add_header(r):
-    """
-    adding disable cache header
-    """
-    r.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    r.headers["Pragma"] = "no-cache"
-    r.headers["Expires"] = "0"
-    r.headers['Cache-Control'] = 'public, max-age=0'
-    return r
-
 # [Xiong] endpoint for sending static files
 @app.route('/data/<path:subpath>')
 def data(subpath):    
     res = send_from_directory(f'{data_folder}', subpath)
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for loading cluster centroids
@@ -91,8 +75,6 @@ def centroids():
         log.info('requesting level 0 clusters')
         centroids_csv = centroids_df[centroids_df['clayer'] == 0].to_csv()        
         res = Response(json.dumps({ 'type': 'centroids', 'data': centroids_csv }), status = 200, mimetype = 'application/json')
-
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for loading overall information for an entity (or all
@@ -107,7 +89,6 @@ def global_info():
     biz_id = request.args.get('biz_id')
     info = database.get_cluster(biz_id, 'all')
     res = Response(info.to_csv(), status = 200, mimetype = 'application/csv')
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for loading information for a certain cluster. It includes
@@ -137,7 +118,6 @@ def cluster_details():
     detail['avgSentLength'] = cluster_row['sentLength']
 
     res = Response(json.dumps(detail), status = 200, mimetype = 'application/json')
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for /cluster-details/ functionalities but computed on the fly
@@ -161,7 +141,6 @@ def cluster_details_live():
     detail['avgSentLength'] = nlp.sent_token_review_length_counter(cid)[1]
 
     res = Response(json.dumps(detail), status = 200, mimetype = 'application/json')
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for computing the distance between the histograms of two clusters.
@@ -186,7 +165,6 @@ def histogram_comparison():
         hist_distances[attr] = dist
 
     res = Response(json.dumps(hist_distances), status = 200, mimetype = 'application/json')
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for computing the top n-grams of specified clusters. If two
@@ -229,7 +207,6 @@ def cluster_topwords():
         topwords = [cur_tfidf_model.top_k(cid1)]
 
     res = Response(json.dumps(topwords), status = 200, mimetype = 'application/json')
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for loading review objects (text and other stats) from
@@ -257,7 +234,6 @@ def cluster_reviews():
     response_df = select_reviews_from_working_df(biz_id, cid, starti, cid2)
 
     res = Response(response_df.to_csv(), status = 200, mimetype = 'text/csv')
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 # [Xiong] endpoint for running command line code on the server. Essentially what
@@ -304,7 +280,6 @@ def remote_run():
         pass
 
     res = Response(response_df.to_csv(), status = 200, mimetype = 'application/json')
-    res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
 def select_reviews_from_working_df(biz_id, cid, starti, cid2 = '-1'):

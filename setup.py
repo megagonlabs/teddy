@@ -7,6 +7,7 @@ with open('README.md') as readme_file:
 requirements = [
     'Cython==0.29.13',
     'Flask==1.1.1',
+    'flask-cors==3.0.8'
     'gensim==3.8.0',
     'lexrank==0.1.0',
     'matplotlib==3.1.1',

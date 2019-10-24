@@ -12,6 +12,7 @@ from flask import jsonify
 from flask import render_template
 from flask import request
 from flask import send_from_directory
+from flask_cors import CORS
 from libs import TfidfModel
 from libs import nlp_length_functions
 from libs.histogram_comparisons import HistogramComparison
@@ -27,21 +28,15 @@ data_folder = os.path.join(os.environ['DATA_DIR'], CONFIG['dataset'])
 schema = json.load(open(os.path.join(data_folder, 'schema.json')))['schema']
 
 app = Flask(__name__, static_folder = './react-app/build/static', template_folder = './react-app/build')
+cors = CORS(app)
+
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-all_centroids_df = pd.read_csv(os.path.join(data_folder, 'centroids.csv'))
-log.info('centroids loaded')
-all_clusters_df = pd.read_csv(os.path.join(data_folder, 'clusters.csv'))
-log.info('clusters loaded')
-db_all = ReviewDB(all_clusters_df, all_centroids_df)
-working_df = None
+database = ReviewDB(data_folder)
 
-tfidf_model = TfidfModel.TFIDFModel(db_all)
-tfidf_model_2g = TfidfModel.TFIDFModel(db_all, 2)
-
-hotel_attr_path = lambda biz_id: os.path.join(data_folder, f'hotel-clusters/{biz_id}/attr.csv')
-hotel_centroids_path = lambda biz_id: os.path.join(data_folder, f'hotel-clusters/{biz_id}/centroids.csv')
+tfidf_model = TfidfModel.TFIDFModel(database.db("all"))
+tfidf_model_2g = TfidfModel.TFIDFModel(database.db("all"), 2)
 
 histogram_comparison_utils = HistogramComparison()
 
@@ -60,37 +55,12 @@ def add_header(r):
     r.headers['Cache-Control'] = 'public, max-age=0'
     return r
 
-# @app.route('/')
-# def index():
-#     return render_template('index.html')
-#     # return send_from_directory('./react-app/build/', 'index.html')
-
 # [Xiong] endpoint for sending static files
 @app.route('/data/<path:subpath>')
 def data(subpath):    
     res = send_from_directory(f'{data_folder}', subpath)
     res.headers.add('Access-Control-Allow-Origin', '*')
     return res
-
-# [Xiong] deprecated but I want to leave it here for now
-# @app.route('/data-sample/')
-# def data_sample():
-#     sample_csv = ''
-#     if request.args.get('x0') != None:
-#         x0 = float(request.args.get('x0'))
-#         x1 = float(request.args.get('x1'))
-#         y0 = float(request.args.get('y0'))
-#         y1 = float(request.args.get('y1'))
-#         reduction = request.args.get('reduction')
-#         filtered_df = df[(df[f'{reduction}_x'] > x0) & (df[f'{reduction}_x'] < x1) & (df[f'{reduction}_y'] > y0) & (df[f'{reduction}_y'] < y1)]
-#         print(filtered_df.shape)
-#         sample_csv = filtered_df.sample(500).to_csv()
-#     else:
-#         sample_csv = df.sample(500).to_csv()
-
-#     res = Response(sample_csv, status = 200, mimetype = 'text/csv')
-#     res.headers.add('Access-Control-Allow-Origin', '*')
-#     return res
 
 # [Xiong] endpoint for loading cluster centroids
 # GET Args:
@@ -103,29 +73,23 @@ def centroids():
     res = None
     biz_id = request.args.get('biz_id')
     log.info(f'requesting centroids for {biz_id}')
-    centroids_df = None
-    if biz_id == 'all':
-        centroids_df = all_centroids_df
-    else:
-        # do something if this file doesn't exist, meaning so few reviews for this hotel
-        # that we can't even do the first-layer clustering
-        centroids_df = pd.read_csv(hotel_centroids_path(biz_id))
+    centroids_df = database.db(biz_id).centroids_df
 
     if request.args.get('cid') != None:
         cid = request.args.get('cid')
         log.info(f'requesting cluster {cid}')
         clayer = len(cid.split('-'))
-        layer_centroids_df = centroids_df[centroids_df['clayer'] == clayer]
+        layer_centroids_df = centroids_df[centroids_df['clayer'] == clayer]        
         cur_centroids_df = layer_centroids_df[layer_centroids_df['cid'].str.startswith(cid + '-')]
         log.info(f'centroids_df.shape {cur_centroids_df.shape}')
         if cur_centroids_df.shape[0] == 0:
-            reviews_df = select_reviews_by_layer(biz_id, cid)
+            reviews_df = database.get_reviews(biz_id, cid)
             res = Response(json.dumps({ 'type': 'reviews', 'data': reviews_df.to_csv() }), status = 200, mimetype = 'application/json')
         else:
             res = Response(json.dumps({ 'type': 'centroids', 'data': cur_centroids_df.to_csv() }), status = 200, mimetype = 'application/json')
     else:
         log.info('requesting level 0 clusters')
-        centroids_csv = centroids_df[centroids_df['clayer'] == 0].to_csv()
+        centroids_csv = centroids_df[centroids_df['clayer'] == 0].to_csv()        
         res = Response(json.dumps({ 'type': 'centroids', 'data': centroids_csv }), status = 200, mimetype = 'application/json')
 
     res.headers.add('Access-Control-Allow-Origin', '*')
@@ -141,8 +105,7 @@ def centroids():
 @app.route('/global-info/')
 def global_info():
     biz_id = request.args.get('biz_id')
-    db = select_db(biz_id)
-    info = db.get_cluster_from_id('all')
+    info = database.get_cluster(biz_id, 'all')
     res = Response(info.to_csv(), status = 200, mimetype = 'application/csv')
     res.headers.add('Access-Control-Allow-Origin', '*')
     return res
@@ -161,8 +124,7 @@ def global_info():
 def cluster_details():
     biz_id = request.args.get('biz_id')
     cid = request.args.get('cid')
-    db = select_db(biz_id)
-    selected_cluster_df = db.get_cluster_from_id(cid)
+    selected_cluster_df = database.get_cluster(biz_id, 'all')
     cluster_row = selected_cluster_df.iloc[0]
 
     detail = { 'hists': {} }
@@ -183,8 +145,7 @@ def cluster_details():
 def cluster_details_live():
     biz_id = request.args.get('biz_id')
     cid = request.args.get('cid')
-    db = select_db(biz_id)
-    selected_cluster_df = db.get_review_from_id(cid)
+    selected_cluster_df = database.get_cluster(biz_id, cid)
     # selected_cluster_df = db.get_cluster_from_id(cid)
 
     detail = { 'hists': {} }
@@ -215,9 +176,8 @@ def histogram_comparison():
     biz_id = request.args.get('biz_id')
     cid1 = request.args.get('cid1')
     cid2 = request.args.get('cid2')
-    db = select_db(biz_id)
-    cluster_row1 = db.get_cluster_from_id(cid1).iloc[0]
-    cluster_row2 = db.get_cluster_from_id(cid2).iloc[0]
+    cluster_row1 = database.get_cluster(biz_id, cid1).iloc[0]
+    cluster_row2 = database.get_cluster(biz_id, cid2).iloc[0]
     hist_distances = {}
     for attr in schema:
         hist1 = dict(zip(list(range(20)), list(map(lambda x: int(x), cluster_row1[attr + '_hist'].split()))))
@@ -254,7 +214,7 @@ def cluster_topwords():
     if ngramsize == 2:
         cur_tfidf_model = tfidf_model_2g
     if biz_id != 'all':
-        db_biz = ReviewDB.load(cluster_file = hotel_attr_path(biz_id))
+        db_biz = None#ReviewDB.load(cluster_file = hotel_attr_path(biz_id))
         cur_tfidf_model = TfidfModel.TFIDFModel(db_biz, ngramsize)
 
     topwords = None
@@ -347,26 +307,6 @@ def remote_run():
     res.headers.add('Access-Control-Allow-Origin', '*')
     return res
 
-# [Xiong] minor hack to keep the front-end running on a different port
-@app.route('/static/manifest.json')
-def manifest():
-    return send_from_directory('./react-app/build/', 'manifest.json')
-
-def select_reviews_by_layer(biz_id, cid):
-    '''
-    Pick reviews for a certain layer under a certain entity (or all entities)
-    Args:
-        biz_id: id for locating an entity (e.g. hotel)
-        cid: id for locating a cluster
-    Returns:
-        sub dataframes for the specified cluster
-    '''
-    if biz_id == 'all':
-        return db_all.get_review_from_id(cid)
-    else:
-        db_biz = ReviewDB.load(hotel_attr_path(biz_id), hotel_centroids_path(biz_id))
-        return db_biz.get_review_from_id(cid)
-
 def select_reviews_from_working_df(biz_id, cid, starti, cid2 = '-1'):
     '''
     Pick 10 reviews from the current working dataframe starting from starti, and
@@ -386,40 +326,13 @@ def select_reviews_from_working_df(biz_id, cid, starti, cid2 = '-1'):
     global working_df # adding this because we need to write to it
 
     if working_df is None:
-        working_df = select_reviews_by_layer(biz_id, cid)
+        working_df = database.get_reviews(biz_id, cid)
         if cid2 != '-1':
-            working_df = pd.concat([working_df, select_reviews_by_layer(biz_id, cid2)])
+            working_df = pd.concat([working_df, database.get_reviews(biz_id, cid2)])
 
     reviews_slice_df = working_df.iloc[starti:starti + 10]
 
     return reviews_slice_df
-
-def select_db(biz_id):
-    '''
-    Return a review_db obejct based on biz_id. The reason we have this function
-    is to avoid loading a whole dataset on the fly, which can take a lot of time.
-    Loading for only one entity is fairly fast.
-    Args:
-        biz_id: 'all' or actual entity id
-    Returns:
-        reference to the db object for all reviews or for one specific entity
-    '''
-    if biz_id == 'all':
-        return db_all
-    else:
-        db_biz = ReviewDB.load(hotel_attr_path(biz_id), hotel_centroids_path(biz_id))
-        return db_biz
-
-def copy_db(biz_id, cid):
-    '''
-    Similar functionality to select_db, except we do the on-the-fly loading for
-    the whole dataset.
-    '''
-    if biz_id == 'all':
-        return ReviewDB.load(all_clusters_path, all_centroids_path)
-    else:
-        db_biz = ReviewDB.load(hotel_attr_path(biz_id), hotel_centroids_path(biz_id))
-        return db_biz
 
 if __name__=='__main__':
     app.run(host='0.0.0.0', port=5000)

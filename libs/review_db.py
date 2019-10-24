@@ -1,34 +1,55 @@
+import os
 import pandas as pd
 import logging
+import json
 logging.basicConfig(format='%(filename)s:%(lineno)d %(message)s')
 log = logging.getLogger(__name__)
 log.setLevel('INFO')
 
+CONFIG = json.load(open("./../config.json"))
+data_folder = os.path.join(os.environ['DATA_DIR'], CONFIG['dataset'])
+
 class ReviewDB():
-    def __init__(self, clusters_df, centroids_df=None):
-        self.clusters_df = clusters_df.reset_index(drop=True)
-        self.clusters_df['review_id'] = pd.Series(self.clusters_df.index, index=self.clusters_df.index)
-        self.centroids_df = centroids_df
+    def __init__(self, data_folder=data_folder):
+        self.entity_db_dict = {
+            "all": EntityDB("all", data_folder)
+        }
 
-    @staticmethod
-    def load(cluster_file='data/yelp_restaurants/centroids.csv', centroids_file=None):
-        """Load a review DB from files
+    def db(self, entity_id):
+        if not entity_id in self.entity_db_dict:
+            self.entity_db_dict[entity_id] = EntityDB(entity_id, data_folder)
+        return self.entity_db_dict[entity_id]
 
-        Args:
-            cluster_file (str, optional): path to csv file
-            centroids_file (str, optional): path to csv file
+    def get_reviews(self, entity_id, reviews_id):
+        db = self.db(entity_id)
+        return db.get_review_from_id(reviews_id)
 
-        Returns:
-            ReviewDB
-        """
-        clusters_df = pd.read_csv(cluster_file, index_col=0)
+    def get_cluster(self, entity_id, cluster_id):
+        db = self.db(entity_id)
+        return db.get_cluster_from_id(cluster_id)
+
+
+
+class EntityDB():
+    def __init__(self, entity_id, data_folder):
+        if entity_id != "all":
+            data_folder = os.path.join(os.path.join(data_folder, 'hotel-clusters'), entity_id)
+        try:
+            cluster_file=os.path.join(data_folder, 'clusters.csv')
+            clusters_df = pd.read_csv(cluster_file, index_col=0)
+        except FileNotFoundError:
+            cluster_file=os.path.join(data_folder, 'attr.csv')
+            clusters_df = pd.read_csv(cluster_file, index_col=0)
+        centroids_file=os.path.join(data_folder, 'centroids.csv')
         log.info(cluster_file + ' loaded')
         if centroids_file is not None:
             centroids_df = pd.read_csv(centroids_file)
             log.info(centroids_file + ' loaded')
         else:
             centroids_df = None
-        return ReviewDB(clusters_df, centroids_df)
+
+        self.centroids_df = centroids_df
+        self.clusters_df = clusters_df
 
     def get_review_from_id(self, _id):
         '''
@@ -87,6 +108,3 @@ class ReviewDB():
         matches = self.clusters_df.review_id.isin(id_list)
         review_match_df = self.clusters_df[matches]
         return review_match_df
-
-    def get_df(self):
-        return self.clusters_df

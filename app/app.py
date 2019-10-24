@@ -52,8 +52,8 @@ def centroids():
     log.info(f'requesting centroids for {biz_id}')
     cid = request.args.get('cid')
     centroids = database.get_centroids(biz_id, cid)
-
-    if centroids.shape[0] == 0:
+    # log.info("centroid shape: " + str(centroids.shape[0]))
+    if centroids is None:
         return Response(json.dumps({ 'type': 'reviews', 'data': database.get_reviews(biz_id, cid).to_csv() }), status = 200, mimetype = 'application/json')
     return Response(json.dumps({ 'type': 'centroids', 'data': centroids.to_csv() }), status = 200, mimetype = 'application/json')
 

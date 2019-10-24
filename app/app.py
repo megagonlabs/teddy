@@ -3,17 +3,13 @@ import logging
 import numpy as np
 import os
 import pandas as pd
-import sys
 
 from collections import Counter
 from flask import Flask
 from flask import Response
-from flask import jsonify
-from flask import render_template
 from flask import request
 from flask import send_from_directory
 from flask_cors import CORS
-from libs import TfidfModel
 from libs import nlp_length_functions
 from libs.histogram_comparisons import HistogramComparison
 from libs.review_db import ReviewDB

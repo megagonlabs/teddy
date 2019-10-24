@@ -57,25 +57,12 @@ def centroids():
     res = None
     biz_id = request.args.get('biz_id')
     log.info(f'requesting centroids for {biz_id}')
-    centroids_df = database.db(biz_id).centroids_df
+    cid = request.args.get('cid')
+    centroids = database.get_centroids(biz_id, cid)
 
-    if request.args.get('cid') != None:
-        cid = request.args.get('cid')
-        log.info(f'requesting cluster {cid}')
-        clayer = len(cid.split('-'))
-        layer_centroids_df = centroids_df[centroids_df['clayer'] == clayer]        
-        cur_centroids_df = layer_centroids_df[layer_centroids_df['cid'].str.startswith(cid + '-')]
-        log.info(f'centroids_df.shape {cur_centroids_df.shape}')
-        if cur_centroids_df.shape[0] == 0:
-            reviews_df = database.get_reviews(biz_id, cid)
-            res = Response(json.dumps({ 'type': 'reviews', 'data': reviews_df.to_csv() }), status = 200, mimetype = 'application/json')
-        else:
-            res = Response(json.dumps({ 'type': 'centroids', 'data': cur_centroids_df.to_csv() }), status = 200, mimetype = 'application/json')
-    else:
-        log.info('requesting level 0 clusters')
-        centroids_csv = centroids_df[centroids_df['clayer'] == 0].to_csv()        
-        res = Response(json.dumps({ 'type': 'centroids', 'data': centroids_csv }), status = 200, mimetype = 'application/json')
-    return res
+    if centroids.shape[0] == 0:
+        return Response(json.dumps({ 'type': 'reviews', 'data': database.get_reviews(biz_id, cid).to_csv() }), status = 200, mimetype = 'application/json')
+    return Response(json.dumps({ 'type': 'centroids', 'data': centroids.to_csv() }), status = 200, mimetype = 'application/json')
 
 # [Xiong] endpoint for loading overall information for an entity (or all
 # entities). It includes average char, word, sentence length, top words, top

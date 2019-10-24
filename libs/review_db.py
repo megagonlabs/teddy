@@ -28,6 +28,10 @@ class ReviewDB():
         db = self.db(entity_id)
         return db.get_cluster_from_id(cluster_id)
 
+    def get_centroids(self, entity_id, cluster_id):
+        db = self.db(entity_id)
+        return db.get_centroids_from_id(cluster_id)
+
 
 
 class EntityDB():
@@ -72,6 +76,16 @@ class EntityDB():
                 a dataframe row for the cluster centroid
         '''
         return self.centroids_df.query(f'cid == "{_id}"')
+
+    def get_centroids_from_id(self, _id):
+        if _id is not None:
+            clayer = len(_id.split('-'))
+            layer_centroids_df = self.centroids_df[self.centroids_df['clayer'] == clayer]  
+            cur_centroids_df = layer_centroids_df[layer_centroids_df['cid'].str.startswith(_id + '-')]
+            if cur_centroids_df.shape[0] == 0:
+                return self.get_reviews(_id)
+            return cur_centroids_df
+        return self.centroids_df[self.centroids_df['clayer'] == 0]
 
     def decode_id(self, _id):
         '''

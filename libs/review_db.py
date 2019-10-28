@@ -28,13 +28,15 @@ class ReviewDB():
         }
 
     def _add_ent(self, entity_id):
-        db = EntityDB("all", data_folder)
+        log.info("entity_id is: " + entity_id)
+        db = EntityDB(entity_id, data_folder)
         self.entity_db_dict[entity_id] = db
         self.tfidf_dict[entity_id] = TFIDFModel(db)
         self.tfidf_bigram_dict[entity_id] = TFIDFModel(db, 2)
 
     def _db(self, entity_id):
         if not entity_id in self.entity_db_dict:
+
             self._add_ent(entity_id)
         return self.entity_db_dict[entity_id]
 
@@ -48,6 +50,7 @@ class ReviewDB():
 
     def get_centroids(self, entity_id, cluster_id):
         db = self._db(entity_id)
+        log.info('cluster_id is ' + str(cluster_id))
         return db.get_centroids_from_id(cluster_id)
 
     def get_topwords(self, entity_id, cluster_id, k=1):
@@ -69,11 +72,18 @@ class EntityDB():
                 raise FileNotFoundError("business_id {0} not found in file {1}".format(entity_id, old_data_folder))
         try:
             cluster_file=os.path.join(data_folder, 'clusters.csv')
+            log.info(cluster_file)
             clusters_df = pd.read_csv(cluster_file, index_col=0)
         except FileNotFoundError:
             cluster_file=os.path.join(data_folder, 'attr.csv')
             clusters_df = pd.read_csv(cluster_file, index_col=0)
-        centroids_file=os.path.join(data_folder, 'centroids.csv')
+            log.info('Clusters file not found for entity_id! Using attr file instead')
+        log.info("entity: " + entity_id)
+        if entity_id == "all":
+            centroids_file=os.path.join(data_folder, 'centroids.csv')
+        else:
+            centroids_file=os.path.join(data_folder, 'centroids.csv')
+            log.info("centroids file:" + centroids_file)
         if centroids_file is not None:
             try:
                 centroids_df = pd.read_csv(centroids_file)
@@ -116,10 +126,13 @@ class EntityDB():
             layer_centroids_df = self.centroids_df[self.centroids_df['clayer'] == clayer]  
             cur_centroids_df = layer_centroids_df[layer_centroids_df['cid'].str.startswith(_id + '-')]
             if cur_centroids_df.shape[0] == 0:
+                log.info("returning None for centroids")
                 # return self.get_review_from_id(_id)
                 #If we want to display something other than a message when there are no clusters we should change this
                 return None
+            log.info("Returning cur_centroids_df")
             return cur_centroids_df
+        log.info("_id is None, returning default")
         return self.centroids_df[self.centroids_df['clayer'] == 0]
 
     def decode_id(self, _id):

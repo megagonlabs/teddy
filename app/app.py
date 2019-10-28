@@ -54,6 +54,7 @@ def centroids():
     centroids = database.get_centroids(biz_id, cid)
     # log.info("centroid shape: " + str(centroids.shape[0]))
     if centroids is None:
+        log.info("No centroids found for cluster")
         return Response(json.dumps({ 'type': 'reviews', 'data': database.get_reviews(biz_id, cid).to_csv() }), status = 200, mimetype = 'application/json')
     return Response(json.dumps({ 'type': 'centroids', 'data': centroids.to_csv() }), status = 200, mimetype = 'application/json')
 
@@ -172,7 +173,7 @@ def cluster_topwords():
     # Right now it's just a simple and dirty hack.
     if cid2 != None:
         topwords.append(database.get_topwords(biz_id, cid2, ngramsize))
-    log.info(topwords)
+    # log.info(topwords)
     res = Response(json.dumps(topwords), status = 200, mimetype = 'application/json')
     return res
 

@@ -28,7 +28,6 @@ class DashboardPane extends Component {
   }
 
   render() {
-    // console.log("DashboardPane render props", this.props.attributes)
     return (
       <div className="vis-pane">
         <ClusterView

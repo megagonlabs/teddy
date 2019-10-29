@@ -63,10 +63,6 @@ class EntityPane extends Component {
     this.loadGoogleMaps();
 
     let _this = this;
-    //var hotels_list_url = process.env.REACT_APP_SERVER_ADDRESS + 'data/hotels-list.json';
-    // d3.json(hotels_list_url).then(data => {
-    //   _this.setState({ hotelsList: data });
-    // });
     var hotel_sections_json = process.env.REACT_APP_SERVER_ADDRESS + 'data/hotel-sections.json';
     d3.json(hotel_sections_json).then(data => {
       _this.setState({ hotelsList: data.children });
@@ -92,7 +88,6 @@ class EntityPane extends Component {
     let treemap = _data => d3.treemap()
       .tile(d3['treemapBinary'])
       .size([width, height])
-      // .padding(2)
       .paddingRight(0)
       .paddingTop(2)
       .paddingBottom(2)
@@ -166,7 +161,6 @@ class EntityPane extends Component {
 
   loadEntityCard(rectPos, data) {
    this.cardRef.style.left = rectPos.x + rectPos.width / 2 + 'px';
-    // this.cardRef.style.top = rectPos.y + rectPos.height / 2 + 'px';
     var height = rectPos.y + rectPos.height / 2;
     while ((height + 350) > window.innerHeight){
       height -= 50;

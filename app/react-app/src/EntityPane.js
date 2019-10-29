@@ -278,10 +278,8 @@ class EntityPane extends Component {
               <Dropdown.Toggle variant="light" id="dropdown-basic" className="entity-color-selection" size="sm">
                 {this.state.colorAttribute}
               </Dropdown.Toggle>
-
               <Dropdown.Menu>
                 <Dropdown.Item href="mean_score" className="entity-color-selection-item" onClick={this.colorHotel}>mean_score</Dropdown.Item>
-
                 {
                   this.state.attributes.map((attr, i) => (
                     <Dropdown.Item href={`${attr}`} className="entity-color-selection-item" onClick={this.colorHotel} key={i}>{attr}</Dropdown.Item>

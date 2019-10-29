@@ -49,19 +49,19 @@ Important Folders
 * `libs/` python libraries for data processing
 * `tests/` testing code for the code in `libs/`
 
-<a name='Installation'></a><h4> Installation </h4> 
+<a name='Installation'></a><h4> Local Installation </h4> 
 Teddy requires Python 3.5 or above.  Make sure you have `venv` installed. If you don't, run `python3 -m pip install virtualenv`
 
 ```bash
 # Install dependencies
-make install
+make install ENV=local
 # Build dependencies
 make build
 # These will automatically run in a virtual environment called 'venv'
 ```
 
 <a name='Keys'></a><h4> API Keys (Optional) </h4> 
-Teddy requires Google API Keys in order to render the map and the hotel images. Please refer to [Google Maps Platform](https://developers.google.com/maps/documentation/embed/get-api-key) on how to get an API Key, and enable the Maps JavaScript API and the Places API. Makefile will ask for this key during installation however you can also configure this later on by calling `make keys`.
+Teddy requires Google API Keys in order to render the map and the hotel images. Please refer to [Google Maps Platform](https://developers.google.com/maps/documentation/embed/get-api-key) on how to get an API Key, and enable the Maps JavaScript API and the Places API.
 
 <a name='Run'></a><h4> Running the Application </h4> 
 ```bash

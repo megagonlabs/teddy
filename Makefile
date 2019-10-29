@@ -11,7 +11,7 @@ venv:
 	test -d $(VENV_NAME) || python3 -m venv $(VENV_NAME)
 	. $(VENV_NAME)/bin/activate
 
-install: venv keys
+install: venv config
 	$(PIP) install .
 	@cd app/react-app; npm install
 	@pip install  -U -e .\[tests\]

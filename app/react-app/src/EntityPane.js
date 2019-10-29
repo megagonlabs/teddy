@@ -36,6 +36,28 @@ class EntityPane extends Component {
     this.selectEntity = this.selectEntity.bind(this);
   }
 
+  componentDidMount() {
+    this.loadGoogleMaps();
+
+    let _this = this;
+    var hotel_sections_json = process.env.REACT_APP_SERVER_ADDRESS + 'data/hotel-sections.json';
+    d3.json(hotel_sections_json).then(data => {
+      _this.setState({ hotelsList: data.children });
+    });
+
+    d3.json(hotel_sections_json).then(data => {
+      data.children.forEach((d, i) => {
+        d3.select('.entities').append('h4').text(`Section ${i}`);
+        this.addTreemap(d);
+      });
+    });
+
+    window.colorEntities = (attr) => {
+      this.setState({ colorAttribute: attr });
+      this.reColorHotels(attr);
+    };
+  }
+
   loadGoogleMaps = () => {
     const existingScript = document.getElementById('googleMaps');
     if (!existingScript) {
@@ -59,27 +81,7 @@ class EntityPane extends Component {
     }
   };
 
-  componentDidMount() {
-    this.loadGoogleMaps();
-
-    let _this = this;
-    var hotel_sections_json = process.env.REACT_APP_SERVER_ADDRESS + 'data/hotel-sections.json';
-    d3.json(hotel_sections_json).then(data => {
-      _this.setState({ hotelsList: data.children });
-    });
-
-    d3.json(hotel_sections_json).then(data => {
-      data.children.forEach((d, i) => {
-        d3.select('.entities').append('h4').text(`Section ${i}`);
-        this.addTreemap(d);
-      });
-    });
-
-    window.colorEntities = (attr) => {
-      this.setState({ colorAttribute: attr });
-      this.reColorHotels(attr);
-    };
-  }
+  
 
   addTreemap(data) {
     const width = 600;
@@ -160,7 +162,7 @@ class EntityPane extends Component {
   }
 
   loadEntityCard(rectPos, data) {
-   this.cardRef.style.left = rectPos.x + rectPos.width / 2 + 'px';
+    this.cardRef.style.left = rectPos.x + rectPos.width / 2 + 'px';
     var height = rectPos.y + rectPos.height / 2;
     while ((height + 350) > window.innerHeight){
       height -= 50;
@@ -278,12 +280,13 @@ class EntityPane extends Component {
               </Dropdown.Toggle>
 
               <Dropdown.Menu>
+                <Dropdown.Item href="mean_score" className="entity-color-selection-item" onClick={this.colorHotel}>mean_score</Dropdown.Item>
+
                 {
                   this.state.attributes.map((attr, i) => (
                     <Dropdown.Item href={`${attr}`} className="entity-color-selection-item" onClick={this.colorHotel} key={i}>{attr}</Dropdown.Item>
                   ))
                 }
-                <Dropdown.Item href="mean_score" className="entity-color-selection-item" onClick={this.colorHotel}>mean_score</Dropdown.Item>
               </Dropdown.Menu>
             </Dropdown>
         </div>

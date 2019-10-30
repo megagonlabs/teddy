@@ -421,6 +421,33 @@ class ClusterView extends Component {
       .attr("class", "grid")
       .call(yGridlines);
   }
+  requestCentroidDetail(centroid, detail_type) {
+    /*
+      Requests details for layers or clusters
+    Args:
+      centroid: centroid object (could also represent global level)
+      detail_type: one of the following str: "global", "first_cluster", "second_cluster"
+    */
+    var col;
+    if (detail_type === 'second_cluster') {
+      this.loadTopWords(this.state.selectedClusterInfo[0].cid, centroid.cid);
+      this.loadTopWords(this.state.selectedClusterInfo[0].cid, centroid.cid, 2);
+      this.compareHists(this.state.selectedClusterInfo[0].cid, centroid.cid);
+      this.props.onSelectCluster(this.state.selectedClusterInfo[0].cid, centroid.cid);
+      col = 2;
+    } else {
+      this.loadTopWords(centroid.cid);
+      this.loadTopWords(centroid.cid, null, 2);
+      if (detail_type === 'global') {
+        col = 0;
+      } else {
+        col = 1;
+        this.props.onSelectCluster(centroid.cid);
+      }
+    }
+    this.loadClusterHists(centroid.cid, col);
+    this.renderClusterBar(centroid, col);
+  }
 
   loadGlobalInfo(bizId) {
     var global_info_url = process.env.REACT_APP_SERVER_ADDRESS + 'global-info/';
@@ -435,10 +462,16 @@ class ClusterView extends Component {
         avgWordLength: globalInfo.wordLength,
         avgSentLength: globalInfo.sentLength
       }});
-      this.loadTopWords(globalInfo.cid);
-      this.loadTopWords(globalInfo.cid, null, 2);
-      this.loadClusterHists(globalInfo.cid, 0);
-      this.renderClusterBar(globalInfo, 0);
+      this.requestCentroidDetail(globalInfo, 'global');
+    });
+  }
+
+  resetCentroid(centroid, newInfo){
+    this.resetCircle();
+    this.resetHists();
+    this.selectedClusters = [centroid.cid];
+    this.setState({
+      selectedClusterInfo: [newInfo]
     });
   }
 
@@ -459,49 +492,22 @@ class ClusterView extends Component {
           selectedClusterInfo: [newInfo]
         });
         // request detail then render in col 1
-        this.loadTopWords(centroid.cid);
-        this.loadTopWords(centroid.cid, null, 2);
-        this.loadClusterHists(centroid.cid, 1);
-        this.renderClusterBar(centroid, 1);
-        this.props.onSelectCluster(centroid.cid);
+        this.requestCentroidDetail(centroid, 'first_cluster')
       } else if (nSelectedClusters == 1) {
         this.selectedClusters.push(centroid.cid);
         this.setState({
           selectedClusterInfo: [...this.state.selectedClusterInfo, newInfo]
         });
         // request detail then render in col 2
-        this.loadTopWords(this.state.selectedClusterInfo[0].cid, centroid.cid);
-        this.loadTopWords(this.state.selectedClusterInfo[0].cid, centroid.cid, 2);
-        this.loadClusterHists(centroid.cid, 2);
-        this.compareHists(this.state.selectedClusterInfo[0].cid, centroid.cid);
-        this.renderClusterBar(centroid, 2);
-        this.props.onSelectCluster(this.state.selectedClusterInfo[0].cid, centroid.cid);
+        this.requestCentroidDetail(centroid, 'second_cluster')
       } else {
         // reset
-        this.resetCircle();
-        this.resetHists();
-        this.selectedClusters = [centroid.cid];
-        this.setState({
-          selectedClusterInfo: [newInfo]
-        });
-        this.loadTopWords(centroid.cid);
-        this.loadTopWords(centroid.cid, null, 2);
-        this.loadClusterHists(centroid.cid, 1);
-        this.renderClusterBar(centroid, 1);
-        this.props.onSelectCluster(centroid.cid);
+        this.resetCentroid(centroid, newInfo)
+        this.requestCentroidDetail(centroid, 'first_cluster')
       }
     } else {
-      this.resetCircle();
-      this.resetHists();
-      this.selectedClusters = [centroid.cid];
-      this.setState({
-        selectedClusterInfo: [newInfo]
-      });
-      this.loadTopWords(centroid.cid);
-      this.loadTopWords(centroid.cid, null, 2);
-      this.loadClusterHists(centroid.cid, 1);
-      this.renderClusterBar(centroid, 1);
-      this.props.onSelectCluster(centroid.cid);
+      this.resetCentroid(centroid, newInfo)
+      this.requestCentroidDetail(centroid, 'first_cluster')
     }
   }
 

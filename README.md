@@ -1,6 +1,6 @@
 # Teddy, the Review Explorer  <img src="https://image.flaticon.com/icons/svg/194/194279.svg" width=100 align="right"/>
 
-This page contains the source code and supplementary material for our CHI 2020 paper: "<a href="results/Teddy-CHI2020.pdf">Teddy: A System for Interactive Review Analysis</a>".
+This page contains the source code and supplementary material for our CHI 2020 paper: "<a href="https://hci.stanford.edu/~cagatay/projects/teddy/Teddy-CHI20.pdf">Teddy: A System for Interactive Review Analysis</a>".
 
 1. [Introduction](#Introduction)
    - [Demo Video of Contributions](#Contributions)
@@ -89,7 +89,7 @@ Some of the icons used in our application are made by [Freepik](https://www.flat
 <a name='Cite'></a><h3> Citing Teddy </h3>
 --------------------------------------
 
-Please cite [the CHI paper](https://hci.stanford.edu/~cagatay/Teddy-CHI2020.pdf). 
+Please cite [the CHI paper](https://hci.stanford.edu/~cagatay/projects/teddy/Teddy-CHI20.pdf). 
 
 ```
 @inproceedings{zhang2020teddy,

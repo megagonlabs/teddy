@@ -1,6 +1,6 @@
 # Teddy, the Review Explorer  <img src="https://image.flaticon.com/icons/svg/194/194279.svg" width=100 align="right"/>
 
-This page contains the source code and supplementary material for our CHI 2020 submission: "<a href="results/Teddy-CHI2020-Submission.pdf">Teddy: A System for Interactive Review Analysis</a>" (Submission ID 2234).
+This page contains the source code and supplementary material for our CHI 2020 paper: "<a href="results/Teddy-CHI2020.pdf">Teddy: A System for Interactive Review Analysis</a>".
 
 1. [Introduction](#Introduction)
    - [Demo Video of Contributions](#Contributions)

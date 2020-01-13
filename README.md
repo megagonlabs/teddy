@@ -93,7 +93,8 @@ Please cite [the CHI paper](https://hci.stanford.edu/~cagatay/Teddy-CHI2020.pdf)
 
 ```
 @inproceedings{zhang2020teddy,
-Author = {
+ title = {Teddy: A System for Interactive Review Analysis},
+ author = {
    Xiong Zhang AND
    Jonathan Engel AND
    Sara Evensen AND
@@ -101,9 +102,8 @@ Author = {
    {\c{C}}a{\u{g}}atay Demiralp AND 
    Wang-Chiew Tan
    }, 
- Title = {Teddy: A System for Interactive Review Analysis},
- Booktitle = {ACM Human Factors in Computing Systems (CHI)},
- Year = {2020}
+ booktitle = {ACM Human Factors in Computing Systems (CHI)},
+ year = {2020}
 }
 ```
 

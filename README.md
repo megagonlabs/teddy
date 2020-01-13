@@ -11,6 +11,8 @@ This page contains the source code and supplementary material for our CHI 2020 s
    - [API Keys](#Keys)
    - [Running the Application](#Run)
 4. [The Dataset](#Dataset)
+5. [Citing Teddy](#Cite)
+6. [Contact](#Contact)
 
 <a name='Introduction'></a><h3> Introduction </h3> 
 ---------------------------------------
@@ -82,3 +84,33 @@ The [reviews we provide](https://github.com/teddyauthors/teddy/blob/readme/data/
 A subset of the reviews for San Francisco hotels have been selected and modified by (1) computing extractions of aspect, opinion pairs and (2) clustering and computing statistics over those clusters.
 
 Some of the icons used in our application are made by [Freepik](https://www.flaticon.com/authors/freepik) and can be found at [www.flaticon.com](https://www.flaticon.com).
+
+
+<a name='Cite'></a><h3> Citing Teddy </h3>
+--------------------------------------
+
+Please cite [the CHI paper](https://hci.stanford.edu/~cagatay/Teddy-CHI2020.pdf). 
+
+```
+@inproceedings{zhang2020teddy,
+Author = {
+Xiong Zhang AND
+Jonathan Engel AND
+Sara Evensen AND
+Yuliang Li AND
+{\c{C}}a{\u{g}}atay  Demiralp AND 
+Wang-Chiew Tan}
+Title = {Teddy: A System for Interactive Review Analysis},
+Booktitle = {ACM Human Factors in Computing Systems (CHI)},
+Year = {2020}
+}
+```
+
+<a name='Contact'></a><h3>Contact</h3>
+--------------------------------------
+
+To get help with problems using Teddy or replicating our results, please submit a GitHub issue.
+
+For personal communication related to Teddy, please contact Jonathan Engel (`jonathan@megagon.ai`), Sara Evensen (`sara@megagon.ai`), or Çağatay Demiralp (`cagatay@megagon.ai`). 
+
+

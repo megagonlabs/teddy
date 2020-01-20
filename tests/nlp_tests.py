@@ -9,13 +9,13 @@ from libs.review_db import ReviewDB
 class NLPTests(unittest.TestCase):
 
     def test_TFIDF_init(self):
-        db = ReviewDB.load(cluster_file='tests/testing_db.csv')
-        tfidf = TFIDFModel(db)
+        db = ReviewDB('tests/test_data/')
+        tfidf = TFIDFModel(db.entity_db_dict['all'])
         self.assertFalse(tfidf is None)
 
     def test_TFIDF_funcs(self):
-        db = ReviewDB.load(cluster_file='tests/testing_db.csv')
-        tfidf = TFIDFModel(db)
+        db = ReviewDB('tests/test_data/')
+        tfidf = TFIDFModel(db.entity_db_dict['all'])
         #test tfidf.tfidf_score(), which also calls tfidf.scores_to_counter()
         tfidf_zero = tfidf.tfidf_score(0, ['wharf'])
         self.assertTrue('wharf' in tfidf_zero.keys())
@@ -62,19 +62,19 @@ class NLPTests(unittest.TestCase):
         self.assertEqual(group2['wharf'], 0.0)
         
     def test_tfidf_bigram(self):
-        db = ReviewDB.load(cluster_file='tests/testing_db.csv')
-        tfidf = TFIDFModel(db, ngramsize=2)
+        db = ReviewDB('tests/test_data/')
+        tfidf = TFIDFModel(db.entity_db_dict['all'], ngramsize=2)
         tfidf_zero = tfidf.tfidf_score(0, ["wharf rooms"])
         # print(tfidf_zero)
         self.assertTrue(("wharf rooms") in tfidf_zero.keys())
 
     def test_nlplength_init(self):
-        db = ReviewDB.load(cluster_file='tests/testing_db.csv')
-        nlp = NLPLengths(db)
+        db = ReviewDB('tests/test_data/')
+        nlp = NLPLengths(db.entity_db_dict['all'])
         self.assertFalse(nlp is None)
     def test_nlplength_funcs(self):
-        db = ReviewDB.load(cluster_file='tests/testing_db.csv')
-        nlp = NLPLengths(db)
+        db = ReviewDB('tests/test_data/')
+        nlp = NLPLengths(db.entity_db_dict['all'])
         #Test empty set
         empty1 = nlp.word_token_review_length_counter([])
         self.assertEqual(empty1, (Counter(), 0, 0, 0, 0))

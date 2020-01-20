@@ -53,6 +53,7 @@ Important Folders
 
 <a name='Installation'></a><h4> Local Installation </h4> 
 Teddy requires Python 3.5 or above.  Make sure you have `venv` installed. If you don't, run `python3 -m pip install virtualenv`
+Copy the contents of /app/react-app/.env.example to /app/react-app/.env
 
 ```bash
 # Install dependencies
@@ -61,6 +62,8 @@ make install ENV=local
 make build
 # These will automatically run in a virtual environment called 'venv'
 ```
+
+
 
 <a name='Keys'></a><h4> API Keys (Optional) </h4> 
 Teddy requires Google API Keys in order to render the map and the hotel images. Please refer to [Google Maps Platform](https://developers.google.com/maps/documentation/embed/get-api-key) on how to get an API Key, and enable the Maps JavaScript API and the Places API.

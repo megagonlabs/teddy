@@ -24,7 +24,6 @@ class App extends React.Component {
   }
 
   UNSAFE_componentWillMount(){
-    // console.log("loadSchema set state")
     this.loadSchema(); 
 
   }
@@ -35,8 +34,6 @@ class App extends React.Component {
     d3.json(schema_address).then(data => 
     {
       that.setState({attributes: data.schema, schemaLoaded: true});
-      // console.log('Setting state')
-      // console.log(data)
     });
   }
   
@@ -46,7 +43,6 @@ class App extends React.Component {
   }
 
   onSelectReductionMethod(_reduction) {
-    // console.log(_reduction);
     this.setState({ reduction: _reduction });
   }
 
@@ -59,7 +55,6 @@ class App extends React.Component {
   }
 
   onLoadHotelCluster(hotelInfo) {
-    // console.log(bizId);
     this.setState(hotelInfo);
   }
 

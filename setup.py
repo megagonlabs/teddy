@@ -19,7 +19,8 @@ requirements = [
     'seaborn==0.9.0',
     'spacy==2.1.8',
     'swifter==0.295',
-    'tqdm==4.35.0'
+    'tqdm==4.35.0',
+    'wheel'
     ]
 
 

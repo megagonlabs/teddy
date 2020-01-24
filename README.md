@@ -36,7 +36,7 @@ is classification, opinion extraction, or representation learning, and use Teddy
 <a name='InterviewStudy'></a><h3> Motivation: An Interview Study into Review Analysis Practices and Challenges </h3> 
 ---------------------------------------
 
-We conducted an interview study with fourteen participants to better understand the workflows and rate-limiting tasks of data scientists working on reviews, which motivated the development of features in Teddy. We used an iterative coding method to aggregate the collected data.
+We conducted an interview study with fifteen participants to better understand the workflows and rate-limiting tasks of data scientists working on reviews, which motivated the development of features in Teddy. We used an iterative coding method to aggregate the collected data.
 
 __[Download the results of our iterative coding here](https://github.com/teddyauthors/teddy/raw/readme/results/interview_study_iterative_coding.xlsx).__
 

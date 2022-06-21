@@ -13,7 +13,7 @@ requirements = [
     'matplotlib==3.1.1',
     'nltk==3.4.5',
     'nose==1.3.7',
-    'numpy==1.17.2',
+    'numpy==1.22.0',
     'pandas==0.25.1',
     'scikit-learn==0.21.3',
     'seaborn==0.9.0',
